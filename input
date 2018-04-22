@@ -1,0 +1,4 @@
+physically_constrained
+n_par 10
+# xxxxxx buck_C6
+ffit? .true.
