@@ -99,7 +99,7 @@ end module
 module GeometricProperties
  implicit none
  private
- public cell,uncell,output_gulp
+ public cell,uncell,output_gulp,Clen,Clen_trim
  contains
  PURE INTEGER FUNCTION Clen(s)      ! returns same result as LEN unless:
  CHARACTER(*),INTENT(IN) :: s       ! last non-blank char is null
@@ -278,6 +278,7 @@ module GeometricProperties
 end module GeometricProperties
 !
 module get_structures
+ implicit none
  private
  public GenerateCIFFileList, ReadListOfCIFFiles, ReadCIFFiles, WriteEnergies
  contains
@@ -400,26 +401,26 @@ module get_structures
    close(111)
    return
   end subroutine ReadCIFFiles
-  subroutine WriteEnergies(n,structure)
+  subroutine WriteEnergies(n_files,CIFFiles)
    use types
    implicit none
-   integer, intent(in)      :: n
-   type(CIFfile),intent(in) :: structure(n)
+   integer, intent(in)      :: n_files
+   type(CIFfile),intent(in) :: CIFFiles(n_files)
    integer                  :: i,u=123,ierr=0
    real                     :: obs_energy_min,cal_energy_min
-   obs_energy_min=minval(structure%obs_energy)
-   cal_energy_min=minval(structure%cal_energy)
+   obs_energy_min=minval(CIFFiles%obs_energy)
+   cal_energy_min=minval(CIFFiles%cal_energy)
    open(u,file="fitness.txt",iostat=ierr)
    if(ierr/=0) stop "fitness.txt can not be open"
    write(u,'(a)')"# struc.;  cell_size/A ;  Rela. Energy Obs / eV; DIFF ; Rela. Energy Cal. / eV ; Obs.Energy ; Cal.Energy"
-   do i=1,n
-    write(u,*)i,structure(i)%cell_0(1),structure(i)%obs_energy-obs_energy_min,&
-                structure(i)%cal_energy-cal_energy_min,abs((structure(i)%obs_energy-obs_energy_min)-&
-               (structure(i)%cal_energy-cal_energy_min)),&
-                structure(i)%obs_energy,structure(i)%cal_energy
+   do i=1,n_files
+    write(u,*)i,CIFFiles(i)%cell_0(1),CIFFiles(i)%obs_energy-obs_energy_min,&
+                CIFFiles(i)%cal_energy-cal_energy_min,abs((CIFFiles(i)%obs_energy-obs_energy_min)-&
+               (CIFFiles(i)%cal_energy-cal_energy_min)),&
+                CIFFiles(i)%obs_energy,CIFFiles(i)%cal_energy
    end do
-   write(u,*)"#Fitness:",sum( abs( structure(1:n)%obs_energy-obs_energy_min -&
-              (structure(1:n)%cal_energy-cal_energy_min)) )   
+   write(u,*)"#Fitness:",sum( abs( CIFFiles(1:n_files)%obs_energy-obs_energy_min -&
+              (CIFFiles(1:n_files)%cal_energy-cal_energy_min)) )   
    close(u)
   end subroutine WriteEnergies
 !
@@ -494,7 +495,7 @@ module fitter_globals
  !integer,allocatable        :: npress(:)
  real,target                :: datas(2,maxcompounds,maxdata),f(maxdata)
  real,pointer               :: x(:),y(:),alldat(:,:)
- !character(100),allocatable      :: ajuste(:)
+ character(15),allocatable  :: ajuste(:,:)
  character(32*maxnp),allocatable :: string_IEEE(:)
  character(100)             :: line,string
  character(5)               :: inpt
@@ -514,11 +515,19 @@ module fitter_globals
    if(line(1:1)=='#') cycle read_input_do
    if(line(1:5)=='n_par')then
     read(line,*)inpt,npar
+    allocate(ajuste(1:2,1:npar))
     allocate(param(1,0:npar-1))
     allocate(np(1))
     allocate(string_IEEE(1))
     np=npar
     param = 0.0
+    do i=1,npar
+     read(5,'(a)') line
+     read(line( 1:10),'(a)') ajuste(1,i)
+     read(line(12:),'(a)') ajuste(2,i)
+     write(6,'(a10,1x,a10)') ajuste(1,i),ajuste(2,i)
+  !# xxxxxxxxxx  buck_C6 
+    end do
     cycle read_input_do
    end if
    if(line(1:5)=='ffit?')then
@@ -535,11 +544,11 @@ module fitter_globals
     if(refit_flag)then
      do j=1,npar
       read(5,'(a32)')      string
-      read(string,'(a32)') string_IEEE(32*(j-1)+1:32*j)
+      read(string(32*(j-1)+1:32*j),'(a32)') string_IEEE(1)
      end do
      write(6,'(a)') string_IEEE
     else
-     string_IEEE=' '
+     string_IEEE(1)=' '
     end if
    end if
    if(line(1:5)=='RSeed') then
@@ -572,10 +581,12 @@ module mod_genetic
  use mod_random
  use fitter_globals
  use qsort_c_module
+ use get_structures
+ use GeometricProperties
  implicit none
  private
  public fit
- integer,parameter             :: ga_size     = 2**13 ! numero de cromosomas
+ integer,parameter             :: ga_size     = 24 !2**10 ! numero de cromosomas
  real,parameter                :: ga_mutationrate = 0.3333 !2000/real(ga_size) ! ga_mutationrate=0.333
  real,parameter                :: ga_eliterate= 0.25, GA_DisasterRate = 0.0000001
  integer,parameter             :: ga_elitists = int( ga_size * ga_eliterate)                   
@@ -585,9 +596,11 @@ module mod_genetic
  type(typ_ga), target          :: pop_beta( ga_size )
  contains
 !
- type(typ_ga) function new_citizen(compound,seed)
+ type(typ_ga) function new_citizen(compound,seed,n_files,CIFFiles)
   implicit none
-  integer :: i,compound,seed,j,k
+  integer                  :: i,j,k
+  integer,intent(in)       :: n_files,compound,seed
+  type(CIFFile),intent(inout) :: CIFFiles(n_files)
   new_citizen%genotype = ' '
   do i = 1,32*np(compound)
    new_citizen%genotype(i:i) = achar(randint(48,49,seed))
@@ -595,39 +608,63 @@ module mod_genetic
   do i = 1,np(compound)
    read(new_citizen%genotype(32*(i-1)+1:32*i),'(b32.32)') new_citizen%phenotype(i)
   end do
-  new_citizen%fitness = fitness( new_citizen%phenotype,compound)
+  new_citizen%fitness = fitness( new_citizen%phenotype,compound,n_files,CIFFiles)
   return
  end function new_citizen
 !
- subroutine UpdateCitizen( axolotl ,compound )
+ subroutine UpdateCitizen( axolotl ,compound , n_files, CIFFiles)
   implicit none
-  integer                     :: compound,i,GA_ELITISTS
+  integer,intent(in)          :: compound,n_files
+  type(CIFFile),intent(inout)    :: CIFFiles(n_files)
+  integer                     :: i,GA_ELITISTS
   real                        :: infinite = 0.0
   type(typ_ga), intent(inout) :: axolotl
   do i = 1,np(compound)
    read(axolotl%genotype(32*(i-1)+1:32*i),'(b32.32)') axolotl%phenotype(i)
   end do
-  axolotl%fitness = fitness( axolotl%phenotype,compound)
+  axolotl%fitness = fitness( axolotl%phenotype,compound,n_files,CIFFiles)
   return
  end subroutine UpdateCitizen
 
- real function Fitness(phenotype,compound)
+ real function Fitness(phenotype,compound,n_files,CIFFiles)
   implicit none
   real, intent(in)    :: phenotype(maxnp)
+  integer,intent(in)  :: n_files
+  type(CIFfile),intent(inout) :: CIFFIles(n_files)
   integer             :: i,compound,k = 0
   real                :: a(0:np(compound)-1),xx,yy
-  character(len=100)  :: funk
+  character(len=100)  :: funk,filename
   logical             :: flagzero = .false.
   real                :: infinite = HUGE(40843542)
-  do i = 0,np(compound)-1
-   a(i) = phenotype(i+1)
+  call system("cp peros_input.lib peros.lib")
+  do i = 1,np(compound)
+   write(line,*)"sed -i 's/",ajuste(1,i)(1:Clen_trim(ajuste(1,i))),"/",phenotype(i),"/g' peros.lib"
+   call system(line)
   end do
+!line="~/GULP-4.2.0/Src/gulp-4.2.0 < "//filename(1:50)//" > tmp "
+!call system(line)  
   fitness = 0.0
   do i = 1, n_files
+!
+   call output_gulp( CIFFiles(i),filename )
+   !write(6,*)'GULP file:',filename
+   call system("~/GULP-4.2.0/Src/gulp-4.2.0 < "//filename(1:50)//" > tmp ")
+   call system("grep 'Total lattice energy       =' tmp | grep 'eV' | awk '{print $5}' > c")
+   open(456,file="c")
+    read(456,'(a)')line
+    if(line(1:20)=="********************")then
+     CIFFiles(i)%cal_energy=1e20
+    else
+     read(line,*) CIFFiles(i)%cal_energy
+    end if
+   close(456)
+   call system("rm c tmp "//filename//" ")
+   !write(6,*)'Calculated, energy', CIFFiles(i)%cal_energy
+!   
+   fitness = 0.0
    xx = datas(1,compound,i)
    yy = datas(2,compound,i)
-   !fitness = fitness + 0.5*( yy - model(a,np(compound),xx) )**2
-   fitness = fitness + 0.5*( yy - CIFFiles(int(xx))%cal_energy )**2
+   fitness = fitness + 0.5*( yy - CIFFiles(i)%cal_energy )**2
   end do
   return
  end function Fitness
@@ -750,16 +787,17 @@ module mod_genetic
   return
  end subroutine Mutate
 
- subroutine NuclearDisaster(Compound)
+ subroutine NuclearDisaster(Compound,n_files,CIFFiles)
   implicit none
-  integer,intent(in) ::  Compound
-  integer            :: k = 0, i, j
-  real               :: rrr
+  integer,intent(in)      ::  Compound,n_files
+  type(CIFFile),intent(inout):: CIFFiles(n_files)
+  integer                 :: k = 0, i, j
+  real                    :: rrr
   do i = GA_ELITISTS + 1, GA_Size
    do j=1,32*np(compound)
     Children%genotype(j:j) = achar(randint(48,49,seed))
    end do
-   call UpdateCitizen(Children(i),Compound)
+   call UpdateCitizen(Children(i),Compound,n_files,CIFFiles)
   end do
   return
  end subroutine NuclearDisaster
@@ -780,9 +818,10 @@ module mod_genetic
   return
  end subroutine
 
- subroutine Mate(compound)
+ subroutine Mate(compound,n_files,CIFFiles)
   integer             :: i, i1, i2, spos
-  integer, intent(in) :: compound
+  integer, intent(in)      :: compound,n_files
+  type(CIFFile),intent(inout) :: CIFFiles(n_files)
   real                :: rrr
   call Elitism()
   do i = GA_ELITISTS + 1, ga_size
@@ -801,11 +840,11 @@ module mod_genetic
    if ( rrr < GA_MUTATIONRATE) then
     call Mutate(children(i),compound)
    else if ( rrr >= GA_MutationRate .and. rrr <= GA_MutationRate + GA_DisasterRate ) then
-    call NuclearDisaster(Compound)
+    call NuclearDisaster(Compound,n_files,CIFFiles)
    end if
   end do
   do i = 1, ga_size
-   call UpdateCitizen(children(i),compound)
+   call UpdateCitizen(children(i),compound,n_files,CIFFiles)
   end do
   return
  end subroutine Mate
@@ -860,26 +899,27 @@ module mod_genetic
   return
  end subroutine choose_propto_fitness
 
- subroutine Fit(Compound,Seed)
+ subroutine Fit(Compound,Seed,n_files,CIFFiles)
   implicit none
-  integer,intent(in) :: Compound, Seed
+  integer,intent(in)       :: Compound, Seed,n_files
+  type(CIFFile),intent(inout) :: CIFFiles(n_files)
   integer,parameter  :: maxstep = 100, minstep = 10
   integer            :: kk, ii, i, k,vgh
   real               :: diff = 0.0, fit0 = 0.0
   integer            :: eps 
   kk = 0
   ii = 0
-  pop_alpha = [(new_citizen(compound,seed), i = 1,ga_size)]
+  pop_alpha = [(new_citizen(compound,seed,n_files,CIFFiles), i = 1,ga_size)]
   parents =>  pop_alpha
   children => pop_beta
   if ( refit_flag ) then
    do i = 1, 2
     parents(i)%genotype=string_IEEE(compound)
     children(i)%genotype=string_IEEE(compound)
-    call UpdateCitizen(parents(i),compound)
-    call UpdateCitizen(children(i),compound)
+    call UpdateCitizen(parents(i),compound,n_files,CIFFiles)
+    call UpdateCitizen(children(i),compound,n_files,CIFFiles)
    end do
-   call Mate(compound)
+   call Mate(compound,n_files,CIFFiles)
    call Swap()
    call SortByFitness()
   end if
@@ -902,7 +942,7 @@ module mod_genetic
     end if
     if ( ii >= maxstep .or. kk >= 10 ) exit converge
    !end if fire
-   call Mate(compound)
+   call Mate(compound,n_files,CIFFiles)
    call Swap()
    fit0 = parents(1)%fitness
   end do converge
@@ -941,5 +981,5 @@ program fitter
  call ReadCIFFiles(n_files,CIFFiles)
  !call WriteEnergies(n_files,CIFFiles)
  call ReadObservables(n_files,CIFFiles)
- call fit(1,seed)
+ call fit(1,seed,n_files,CIFFiles)
 end program fitter
