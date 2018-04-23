@@ -1,6 +1,10 @@
 physically_constrained
-n_par 1
-xxxxxxxxx1 charge
-ffit? .true.
-refit .true.
-00000000000000000000000000000000
+n_par 3
+xxxxxxxxx1 A_buck
+xxxxxxxxx2 rho_buck
+xxxxxxxxx3 C_buck
+ffit? .false.
+refit .false.
+01000110101100100001001010101101
+00111110111101101110010100100110
+01000100001011100011110011000101

@@ -248,12 +248,12 @@ module GeometricProperties
  end do
  RETURN
  END SUBROUTINE inverse
- subroutine output_gulp(CIFFiles,GULPFilename)
+ subroutine output_gulp(u,CIFFiles,GULPFilename)
   use types
   implicit none
   type(CIFfile),intent(inout)       :: CIFFiles
   character(len=100),intent(out)    :: GULPFilename
-  integer                           :: u=444
+  integer,intent(in)                :: u
   integer                           :: i,k
   real               :: mmm,rrr
   integer            :: zzz
@@ -270,6 +270,7 @@ module GeometricProperties
    write(u,'(a4,1x,3(f14.7,1x),1x,f14.7)')CIFFiles%atom_label(i),&
     (CIFFiles%atom_xcrystal(k,i),k=1,3),CIFFiles%atom_charge(i)
   end do
+  write(u,'(a)')'supercell 2 1 1'
   write(u,'(A)')'library peros'
   !write(u,'(a,1x,a)')'output lammps ','test'
   !write(u,'(a,1x,a)')'output cif ','test'
@@ -322,6 +323,7 @@ module get_structures
    character(len=100)                :: filename = " "
    character(len=20)                 :: spam
    character(len=80)                 :: string_stop_head= "_atom_site_charge"
+   real                              :: infinite = 3.4028e38
    open(111,file="list",iostat=ierr)
    if(ierr/=0)stop
    do i=1,n_files
@@ -385,14 +387,19 @@ module get_structures
      write(6,'(a2,1x,3(f14.7,1x))')CIFFiles(i)%type_symbol(j),(CIFFiles(i)%atom_xcrystal(k,j),k=1,3)
     end do
     close(100)
-    call output_gulp( CIFFiles(i),filename )
+    call output_gulp(444,CIFFiles(i),filename )
     write(6,*)'GULP file:',filename
     line="~/GULP-4.2.0/Src/gulp-4.2.0 < "//filename(1:50)//" > tmp "
     call system(line)
     line="grep 'Total lattice energy       =' tmp | grep 'eV' | awk '{print $5}' > c"
     call system(line)
     open(456,file="c")
-     read(456,*) CIFFiles(i)%cal_energy
+    read(456,'(a)')line
+    if(line(1:20)=="********************")then
+     CIFFiles(i)%cal_energy=infinite
+    else
+     read(line,*) CIFFiles(i)%cal_energy
+    end if
     close(456)
     line="rm c tmp "//filename//" "
     call system(line)
@@ -419,8 +426,8 @@ module get_structures
                (CIFFiles(i)%cal_energy-cal_energy_min)),&
                 CIFFiles(i)%obs_energy,CIFFiles(i)%cal_energy
    end do
-   write(u,*)"#Fitness:",sum( abs( CIFFiles(1:n_files)%obs_energy-obs_energy_min -&
-              (CIFFiles(1:n_files)%cal_energy-cal_energy_min)) )   
+   !write(u,*)"#Fitness:",sum( abs( CIFFiles(1:n_files)%obs_energy-obs_energy_min -&
+   !           (CIFFiles(1:n_files)%cal_energy-cal_energy_min)) )   
    close(u)
   end subroutine WriteEnergies
 !
@@ -509,6 +516,7 @@ module fitter_globals
  contains
   subroutine read_input()
   implicit none
+  character(len=32)  :: chain
   read_input_do: do
    read(5,'(A)',iostat=err_apertura)line
    if ( err_apertura /= 0 ) exit read_input_do
@@ -532,10 +540,10 @@ module fitter_globals
    end if
    if(line(1:5)=='ffit?')then
     read(line,*)inpt,flag
-    if(flag.eqv..false.)then
-     write(6,*)'[WARN] Fit is already done'
-     read(5,*)(param(1,j),j=0,npar-1)
-    end if
+    !if(flag.eqv..false.)then
+    ! write(6,*)'[WARN] Fit is already done'
+    ! read(5,*)(param(1,j),j=0,npar-1)
+    !end if
     cycle read_input_do
    end if
    if(line(1:5)=='refit') then
@@ -543,12 +551,13 @@ module fitter_globals
     read(line,*)inpt,refit_flag
     if(refit_flag)then
      do j=1,npar
-      read(5,'(a32)')      string
-      read(string(32*(j-1)+1:32*j),'(a32)') string_IEEE(1)
+      read(5,'(a32)')chain(1:32)
+      write(6,'(a32)')chain(1:32)
+      string_IEEE(1)(32*(j-1)+1:32*j)=chain(1:32)
      end do
-     write(6,'(a)') string_IEEE
+     write(6,'(a)')string_IEEE(1)(1:32*npar)
     else
-     string_IEEE(1)=' '
+     string_IEEE(1) = ' '
     end if
    end if
    if(line(1:5)=='RSeed') then
@@ -586,7 +595,7 @@ module mod_genetic
  implicit none
  private
  public fit
- integer,parameter             :: ga_size     = 24 !2**10 ! numero de cromosomas
+ integer,parameter             :: ga_size         = 10 !2**10 ! numero de cromosomas
  real,parameter                :: ga_mutationrate = 0.3333 !2000/real(ga_size) ! ga_mutationrate=0.333
  real,parameter                :: ga_eliterate= 0.25, GA_DisasterRate = 0.0000001
  integer,parameter             :: ga_elitists = int( ga_size * ga_eliterate)                   
@@ -598,17 +607,21 @@ module mod_genetic
 !
  type(typ_ga) function new_citizen(compound,seed,n_files,CIFFiles)
   implicit none
-  integer                  :: i,j,k
-  integer,intent(in)       :: n_files,compound,seed
+  integer                     :: i,j,k
+  integer,intent(in)          :: n_files,compound,seed
   type(CIFFile),intent(inout) :: CIFFiles(n_files)
+  real                        :: infinite = 3.4028e38
+  new_citizen%fitness = infinite
   new_citizen%genotype = ' '
-  do i = 1,32*np(compound)
-   new_citizen%genotype(i:i) = achar(randint(48,49,seed))
+  do while ( new_citizen%fitness == infinite )
+   do i = 1,32*np(compound)
+    new_citizen%genotype(i:i) = achar(randint(48,49,seed))
+   end do
+   do i = 1,np(compound)
+    read(new_citizen%genotype(32*(i-1)+1:32*i),'(b32.32)') new_citizen%phenotype(i)
+   end do
+   new_citizen%fitness = fitness( new_citizen%phenotype,compound,n_files,CIFFiles)
   end do
-  do i = 1,np(compound)
-   read(new_citizen%genotype(32*(i-1)+1:32*i),'(b32.32)') new_citizen%phenotype(i)
-  end do
-  new_citizen%fitness = fitness( new_citizen%phenotype,compound,n_files,CIFFiles)
   return
  end function new_citizen
 !
@@ -625,47 +638,98 @@ module mod_genetic
   axolotl%fitness = fitness( axolotl%phenotype,compound,n_files,CIFFiles)
   return
  end subroutine UpdateCitizen
-
+ integer*4 function get_file_unit (lu_max)
+  integer*4 lu_max,  lu, m, iostat
+  logical   opened
+  m = lu_max  ;  if (m < 1) m = 97
+  do lu = m,1,-1
+   inquire (unit=lu, opened=opened, iostat=iostat)
+   if (iostat.ne.0) cycle
+   if (.not.opened) exit
+  end do
+  get_file_unit = lu
+  return
+ end function get_file_unit
  real function Fitness(phenotype,compound,n_files,CIFFiles)
+  use omp_lib
   implicit none
   real, intent(in)    :: phenotype(maxnp)
   integer,intent(in)  :: n_files
   type(CIFfile),intent(inout) :: CIFFIles(n_files)
-  integer             :: i,compound,k = 0
-  real                :: a(0:np(compound)-1),xx,yy
-  character(len=100)  :: funk,filename
+  integer             :: i,compound,k = 0, u,ii
+  real                :: a(0:np(compound)-1),xx,yy,penalty,obs_energy_min,cal_energy_min
+  character(len=100)  :: funk,filename(n_files)
+  character(len=200)  :: line
   logical             :: flagzero = .false.
-  real                :: infinite = HUGE(40843542)
+  real                :: infinite = 3.4028e38
   call system("cp peros_input.lib peros.lib")
-  do i = 1,np(compound)
+  penalty=0.0
+  refer: do i = 1,np(compound)
    write(line,*)"sed -i 's/",ajuste(1,i)(1:Clen_trim(ajuste(1,i))),"/",phenotype(i),"/g' peros.lib"
    call system(line)
-  end do
-!line="~/GULP-4.2.0/Src/gulp-4.2.0 < "//filename(1:50)//" > tmp "
-!call system(line)  
+   phys_constrains: if ( physical_constrains ) then
+    funk=ajuste(2,i)
+    select case(funk)
+     case("A_buck")
+      if (phenotype(i)<=1e2.or.isnan(phenotype(i)).or.phenotype(i)>=1e10)then
+       penalty=infinite
+       exit refer
+      end if
+     case("rho_buck")
+      if (phenotype(i)<1.0e-8.or.phenotype(i)>1.0.or.isnan(phenotype(i)))then
+       penalty=infinite
+       exit refer
+      end if
+     case("C_buck")
+      if (phenotype(i)<0.0.or.phenotype(i)>1e5.or.isnan(phenotype(i)))then 
+       penalty=infinite
+       exit refer
+      end if
+    end select
+   end if phys_constrains
+  end do refer
   fitness = 0.0
-  do i = 1, n_files
-!
-   call output_gulp( CIFFiles(i),filename )
-   !write(6,*)'GULP file:',filename
-   call system("~/GULP-4.2.0/Src/gulp-4.2.0 < "//filename(1:50)//" > tmp ")
-   call system("grep 'Total lattice energy       =' tmp | grep 'eV' | awk '{print $5}' > c")
-   open(456,file="c")
-    read(456,'(a)')line
+  calgulp: if ( penalty < 1.0 ) then
+  !$omp parallel default(private) shared(n_files, CIFFiles, datas, filename, u,ii, line)
+  ii=0
+  scan_: do
+   !$omp critical
+   ii=ii+1
+   i=ii
+   if(i .le. n_files)then
+    u=get_file_unit(444)
+    call output_gulp(u,CIFFiles(i),filename(i))
+    write(line,*)"~/GULP-4.2.0/Src/gulp-4.2.0 < ",filename(i)(1:Clen_trim(filename(i)))," > ",&
+     filename(i)(1:Clen_trim(filename(i))),".gout "
+    call system(line)
+    write(line,*)"grep 'Total lattice energy       =' ",filename(i)(1:Clen_trim(filename(i))),&
+     ".gout | grep 'eV' | awk '{print $5}' > ",filename(i)(1:Clen_trim(filename(i))),".tmp "
+    call system(line)
+    write(line,*)"grep 'Total lattice energy       =' ",filename(i)(1:Clen_trim(filename(i))),&
+     ".gout | grep 'eV' | awk '{print $5}' > ",filename(i)(1:Clen_trim(filename(i))),".tmp "
+    call system(line)
+    u=get_file_unit(444)
+    open(u,file=filename(i)(1:Clen_trim(filename(i)))//".tmp")
+    read(u,'(a)')line
     if(line(1:20)=="********************")then
-     CIFFiles(i)%cal_energy=1e20
+     CIFFiles(i)%cal_energy=infinite
     else
      read(line,*) CIFFiles(i)%cal_energy
     end if
-   close(456)
-   call system("rm c tmp "//filename//" ")
-   !write(6,*)'Calculated, energy', CIFFiles(i)%cal_energy
-!   
-   fitness = 0.0
-   xx = datas(1,compound,i)
-   yy = datas(2,compound,i)
-   fitness = fitness + 0.5*( yy - CIFFiles(i)%cal_energy )**2
-  end do
+    close(u)
+    end if
+   !$omp end critical
+   if(i.gt.n_files) exit
+  end do scan_
+  !$omp end parallel
+  obs_energy_min=minval(CIFFiles%obs_energy)
+  cal_energy_min=minval(CIFFiles%cal_energy)
+  fitness = sum( 0.5*abs( CIFFiles(1:n_files)%obs_energy-obs_energy_min -&
+   (CIFFiles(1:n_files)%cal_energy-cal_energy_min))**2)
+  else
+   fitness = penalty
+  end if calgulp
+  !call system("rm struc/*.tmp struc/*.gout")
   return
  end function Fitness
 
@@ -949,8 +1013,8 @@ module mod_genetic
   do i = 0, np( compound )-1
    param( compound,i ) = children(1)%phenotype(i+1)
   end do
-  write(111,*)'#',(param(compound,i),i=0,np(compound )-1)
-  write(111,*)'#','Fitness:',fit0,'Similarity:',eps,'Rseed',seed
+  write(6,*)'#',(param(compound,i),i=0,np(compound )-1)
+  write(6,*)'#','Fitness:',fit0,'Similarity:',eps,'Rseed',seed
   return
  end subroutine fit
 end module mod_genetic
@@ -979,7 +1043,8 @@ program fitter
  call ReadListOfCIFFiles(n_files)
  allocate( CIFFiles(1:n_files) )
  call ReadCIFFiles(n_files,CIFFiles)
- !call WriteEnergies(n_files,CIFFiles)
+ call WriteEnergies(n_files,CIFFiles)
  call ReadObservables(n_files,CIFFiles)
- call fit(1,seed,n_files,CIFFiles)
+ if (flag) call fit(1,seed,n_files,CIFFiles)
+ 
 end program fitter
