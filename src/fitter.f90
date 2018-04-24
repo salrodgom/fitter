@@ -389,7 +389,8 @@ module get_structures
     close(100)
     call output_gulp(444,CIFFiles(i),filename )
     write(6,*)'GULP file:',filename
-    line="~/GULP-4.2.0/Src/gulp-4.2.0 < "//filename(1:50)//" > tmp "
+    !line="~/GULP-4.2.0/Src/gulp-4.2.0 < "//filename(1:50)//" > tmp "
+    line="~/GULP-4.4/Src/gulp < "//filename(1:50)//" > tmp "
     call system(line)
     line="grep 'Total lattice energy       =' tmp | grep 'eV' | awk '{print $5}' > c"
     call system(line)
@@ -699,7 +700,8 @@ module mod_genetic
    if(i .le. n_files)then
     u=get_file_unit(444)
     call output_gulp(u,CIFFiles(i),filename(i))
-    write(line,*)"~/GULP-4.2.0/Src/gulp-4.2.0 < ",filename(i)(1:Clen_trim(filename(i)))," > ",&
+    !~/GULP-4.4/Src/gulp ~/GULP-4.2.0/Src/gulp-4.2.0 
+    write(line,*)"~/GULP-4.4/Src/gulp < ",filename(i)(1:Clen_trim(filename(i)))," > ",&
      filename(i)(1:Clen_trim(filename(i))),".gout "
     call system(line)
     write(line,*)"grep 'Total lattice energy       =' ",filename(i)(1:Clen_trim(filename(i))),&
