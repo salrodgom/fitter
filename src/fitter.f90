@@ -99,7 +99,7 @@ end module
 module GeometricProperties
  implicit none
  private
- public cell,uncell,output_gulp,Clen,Clen_trim
+ public cell,uncell,output_gulp,output_gulp_fit,Clen,Clen_trim
  contains
  PURE INTEGER FUNCTION Clen(s)      ! returns same result as LEN unless:
  CHARACTER(*),INTENT(IN) :: s       ! last non-blank char is null
@@ -276,6 +276,34 @@ module GeometricProperties
   !write(u,'(a,1x,a)')'output cif ','test'
   close(u)
  end subroutine output_gulp
+ subroutine output_gulp_fit(u,n_files,CIFFiles)
+  use types
+  implicit none
+  integer,intent(in)                :: u,n_files
+  type(CIFfile),intent(in   )       :: CIFFiles(n_files)
+  character(len=100)                :: GULPFilename="fit.gin"
+  integer                           :: i,j,k
+  real               :: mmm,rrr,obs_energy_min
+  integer            :: zzz
+  character(len=2)   :: zlz
+  obs_energy_min=minval(CIFFiles%obs_energy)
+  open(u,file=GULPFilename)
+  write(u,'(a)')'fit conv molq'
+  do i=1,n_files
+   write(u,'(A)')'cell'
+   write(u,'(6(f9.5,1x))') (CIFFiles(i)%cell_0(k) , k=1,6)
+   write(u,'(A)')'fractional'
+   do j=1,CIFFiles(i)%n_atoms
+    write(u,'(a4,1x,3(f14.7,1x),1x,f14.7)')CIFFiles(i)%atom_label(j),&
+    (CIFFiles(i)%atom_xcrystal(k,j),k=1,3),CIFFiles(i)%atom_charge(j)
+   end do
+   write(u,'(a)')'observable'
+   write(u,*)'energy eV'
+   write(u,*)CIFFiles(i)%obs_energy - obs_energy_min, 100.0
+   write(u,*)'end'
+  end do
+  close(u)
+ end subroutine output_gulp_fit
 end module GeometricProperties
 !
 module get_structures
@@ -407,6 +435,7 @@ module get_structures
     write(6,*)'Calculated, energy', CIFFiles(i)%cal_energy
    end do
    close(111)
+   call output_gulp_fit(444,n_files,CIFFiles)
    return
   end subroutine ReadCIFFiles
   subroutine WriteEnergies(n_files,CIFFiles)
