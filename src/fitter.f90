@@ -297,11 +297,17 @@ module GeometricProperties
     write(u,'(a4,1x,3(f14.7,1x),1x,f14.7)')CIFFiles(i)%atom_label(j),&
     (CIFFiles(i)%atom_xcrystal(k,j),k=1,3),CIFFiles(i)%atom_charge(j)
    end do
+   write(u,'(a)')'supercell 2 1 1'
    write(u,'(a)')'observable'
    write(u,*)'energy eV'
    write(u,*)CIFFiles(i)%obs_energy - obs_energy_min, 100.0
    write(u,*)'end'
   end do
+  !# Tell the program to fit the overall shift
+  write(u,'(A)')'vary'
+  write(u,'(A)')' shift'
+  write(u,'(A)')'end'
+  write(u,'(A)')'library peros'
   close(u)
  end subroutine output_gulp_fit
 end module GeometricProperties
@@ -438,16 +444,19 @@ module get_structures
    call output_gulp_fit(444,n_files,CIFFiles)
    return
   end subroutine ReadCIFFiles
-  subroutine WriteEnergies(n_files,CIFFiles)
+  subroutine WriteEnergies(n_files,CIFFiles,add)
    use types
    implicit none
-   integer, intent(in)      :: n_files
-   type(CIFfile),intent(in) :: CIFFiles(n_files)
-   integer                  :: i,u=123,ierr=0
-   real                     :: obs_energy_min,cal_energy_min
+   integer, intent(in)         :: n_files
+   character(len=3),intent(in) :: add
+   type(CIFfile),intent(in)    :: CIFFiles(n_files)
+   integer                     :: i,u=123,ierr=0
+   real                        :: obs_energy_min,cal_energy_min
+   character(len=20)           :: filename = " "
+   filename="fitness_"//add(1:3)//".txt"
    obs_energy_min=minval(CIFFiles%obs_energy)
    cal_energy_min=minval(CIFFiles%cal_energy)
-   open(u,file="fitness.txt",iostat=ierr)
+   open(u,file=filename,iostat=ierr)
    if(ierr/=0) stop "fitness.txt can not be open"
    write(u,'(a)')"# struc.;  cell_size/A ;  Rela. Energy Obs / eV; DIFF ; Rela. Energy Cal. / eV ; Obs.Energy ; Cal.Energy"
    do i=1,n_files
@@ -456,8 +465,6 @@ module get_structures
                (CIFFiles(i)%cal_energy-cal_energy_min)),&
                 CIFFiles(i)%obs_energy,CIFFiles(i)%cal_energy
    end do
-   !write(u,*)"#Fitness:",sum( abs( CIFFiles(1:n_files)%obs_energy-obs_energy_min -&
-   !           (CIFFiles(1:n_files)%cal_energy-cal_energy_min)) )   
    close(u)
   end subroutine WriteEnergies
 !
@@ -538,7 +545,7 @@ module fitter_globals
  character(5)               :: inpt
  logical                    :: flag = .true., FlagFire = .false.,seed_flag=.true.
  logical                    :: physical_constrains = .false., range_flag =.true.
- logical                    :: refit_flag = .false.
+ logical                    :: refit_flag = .false., flag_shift=.false.
  real,parameter             :: R = 0.008314472 ! kJ / mol / K
  real                       :: T = 298.0
  !real                       :: inferior
@@ -547,33 +554,38 @@ module fitter_globals
   subroutine read_input()
   implicit none
   character(len=32)  :: chain
+  allocate(np(1))
+  npar = 0
   read_input_do: do
    read(5,'(A)',iostat=err_apertura)line
    if ( err_apertura /= 0 ) exit read_input_do
    if(line(1:1)=='#') cycle read_input_do
+   if(line(1:7)=="shifted") then
+    write(6,*)'[WARN] Shifting ( n_par -> n_par + 1 )'
+    read(line,*)inpt,flag_shift
+    if( flag_shift ) then
+     npar=npar+1
+    end if
+    cycle read_input_do
+   end if
    if(line(1:5)=='n_par')then
-    read(line,*)inpt,npar
+    read(line,*)inpt,np(1)
+    npar=npar+np(1)
     allocate(ajuste(1:2,1:npar))
     allocate(param(1,0:npar-1))
-    allocate(np(1))
     allocate(string_IEEE(1))
-    np=npar
-    param = 0.0
+    np(1) = npar
+    param(1,:) = 0.0
     do i=1,npar
      read(5,'(a)') line
      read(line( 1:10),'(a)') ajuste(1,i)
-     read(line(12:),'(a)') ajuste(2,i)
+     read(line(12:),'(a)')   ajuste(2,i)
      write(6,'(a10,1x,a10)') ajuste(1,i),ajuste(2,i)
-  !# xxxxxxxxxx  buck_C6 
     end do
     cycle read_input_do
    end if
    if(line(1:5)=='ffit?')then
     read(line,*)inpt,flag
-    !if(flag.eqv..false.)then
-    ! write(6,*)'[WARN] Fit is already done'
-    ! read(5,*)(param(1,j),j=0,npar-1)
-    !end if
     cycle read_input_do
    end if
    if(line(1:5)=='refit') then
@@ -625,7 +637,7 @@ module mod_genetic
  implicit none
  private
  public fit
- integer,parameter             :: ga_size         = 10 !2**10 ! numero de cromosomas
+ integer,parameter             :: ga_size         = 32 !2**10 ! numero de cromosomas
  real,parameter                :: ga_mutationrate = 0.3333 !2000/real(ga_size) ! ga_mutationrate=0.333
  real,parameter                :: ga_eliterate= 0.25, GA_DisasterRate = 0.0000001
  integer,parameter             :: ga_elitists = int( ga_size * ga_eliterate)                   
@@ -643,7 +655,7 @@ module mod_genetic
   real                        :: infinite = 3.4028e38
   new_citizen%fitness = infinite
   new_citizen%genotype = ' '
-  do while ( new_citizen%fitness == infinite )
+  !do while ( new_citizen%fitness == infinite )
    do i = 1,32*np(compound)
     new_citizen%genotype(i:i) = achar(randint(48,49,seed))
    end do
@@ -651,7 +663,7 @@ module mod_genetic
     read(new_citizen%genotype(32*(i-1)+1:32*i),'(b32.32)') new_citizen%phenotype(i)
    end do
    new_citizen%fitness = fitness( new_citizen%phenotype,compound,n_files,CIFFiles)
-  end do
+  !end do
   return
  end function new_citizen
 !
@@ -680,20 +692,28 @@ module mod_genetic
   get_file_unit = lu
   return
  end function get_file_unit
+!
  real function Fitness(phenotype,compound,n_files,CIFFiles)
   use omp_lib
   implicit none
   real, intent(in)    :: phenotype(maxnp)
   integer,intent(in)  :: n_files
   type(CIFfile),intent(inout) :: CIFFIles(n_files)
-  integer             :: i,compound,k = 0, u,ii
-  real                :: a(0:np(compound)-1),xx,yy,penalty,obs_energy_min,cal_energy_min
+  integer             :: i,compound,k = 0, u,ii,np_real
+  real                :: a(0:np(compound)-1),xx,yy,penalty,obs_energy_min,cal_energy_min,obs_energy_max
   character(len=100)  :: funk,filename(n_files)
   character(len=200)  :: line
   logical             :: flagzero = .false.
   real                :: infinite = 3.4028e38
   call system("cp peros_input.lib peros.lib")
   penalty=0.0
+  !if( flag_shift ) then 
+  ! np_real = np(compound) - 1
+  ! fitness = phenotype(np(compound))
+  !else
+  ! np_real = np(compound) 
+   fitness = 0.0
+  !end if
   refer: do i = 1,np(compound)
    write(line,*)"sed -i 's/",ajuste(1,i)(1:Clen_trim(ajuste(1,i))),"/",phenotype(i),"/g' peros.lib"
    call system(line)
@@ -715,10 +735,14 @@ module mod_genetic
        penalty=infinite
        exit refer
       end if
+     !case("E_shift")
+     ! if(phenotype(i)>=maxval(CIFFiles%obs_energy))then
+     !  penalty=infinite
+     !  exit refer
+     ! end if
     end select
    end if phys_constrains
   end do refer
-  fitness = 0.0
   calgulp: if ( penalty < 1.0 ) then
   !$omp parallel default(private) shared(n_files, CIFFiles, datas, filename, u,ii, line)
   ii=0
@@ -755,10 +779,10 @@ module mod_genetic
   !$omp end parallel
   obs_energy_min=minval(CIFFiles%obs_energy)
   cal_energy_min=minval(CIFFiles%cal_energy)
-  fitness = sum( 0.5*abs( CIFFiles(1:n_files)%obs_energy-obs_energy_min -&
-   (CIFFiles(1:n_files)%cal_energy-cal_energy_min))**2)
+  fitness = fitness + sum(abs( CIFFiles(1:n_files)%obs_energy-obs_energy_min -&
+   (CIFFiles(1:n_files)%cal_energy-cal_energy_min))**2)/real(2*n_files)
   else
-   fitness = penalty
+   fitness = fitness + penalty
   end if calgulp
   !call system("rm struc/*.tmp struc/*.gout")
   return
@@ -1074,8 +1098,8 @@ program fitter
  call ReadListOfCIFFiles(n_files)
  allocate( CIFFiles(1:n_files) )
  call ReadCIFFiles(n_files,CIFFiles)
- call WriteEnergies(n_files,CIFFiles)
+ call WriteEnergies(n_files,CIFFiles,"ini")
  call ReadObservables(n_files,CIFFiles)
  if (flag) call fit(1,seed,n_files,CIFFiles)
- 
+ call WriteEnergies(n_files,CIFFiles,"end") 
 end program fitter

@@ -1,33 +1,40 @@
-species 6
+species 7
 C1 core  0.7710
 N1 core -1.1000
 H1 core  0.0230
 H2 core  0.5400
 Pb core  2.0300
 I  core -1.1300
+Br core -1.1300
 lennard 12 6 epsilon x13 kcal
 C1  C1 0.1094  3.39970  0   12  
 C1  N1 0.1364  3.32480  0   12  
 C1  H1 0.0414  2.67980  0   12  
 C1  H2 0.0414  2.23440  0   12  
-N1  N1 0.1700  3.25000  0   12  
+N1  N1 0.1700  3.25000  0   12 
 N1  H1 0.0517  2.60500  0   12  
 N1  H2 0.0517  2.15950  0   12  
 H1  H1 0.0157  1.96000  0   12  
 H1  H2 0.0157  1.51450  0   12  
 H1  Pb 0.0140  2.26454  0   12  
 H1  I  0.0574  3.10000  0   12  
+H2  Br 0.05125 2.45535714285714 0 12
+H1  Br 0.05125 2.76785714285714 0 12
 H2  H2 0.0157  1.06910  0   12  
 H2  Pb 0.0140  2.70999  0   12  
 H2  I  0.0574  2.75000  0   12  
 buck inter kcal
-Pb  Pb 70359906.629702  0.131258    0.0 0 12 
-Pb  I  103496.133010  0.321737    0.0 0 12      
-I   I  xxxxxxxxx1   xxxxxxxxx2   xxxxxxxxx3  0 12  #22793.338582     0.482217  696.949542 0 12 
-C1 Pb  32690390.937995  0.150947    0.0 0 12      
-C1 I    112936.714213   0.342426    0.0 0 12      
-N1 Pb 32690390.937995   0.150947    0.0 0 12      
-N1 I    112936.714213   0.342426    0.0 0 12      
+Pb  Pb 70359906.629702  0.131258    0.0 0 12            
+Pb  Br   xxxxxxxxx1  xxxxxxxxx2   xxxxxxxxx3   0 12 # 7.38926234E+09  4.05318387E-05   0.0
+Br  Br   xxxxxxxxx4  xxxxxxxxx5   xxxxxxxxx6   0 12 # 24575.9688      0.484374017       0.0
+Pb  I    103496.133010  0.321737    0.0 0 12    
+I   I     22793.338582     0.482217  696.949542 0 12 
+C1  Pb 32690390.937995  0.150947    0.0 0 12      
+C1  I    112936.714213   0.342426    0.0 0 12      
+N1  Pb 32690390.937995   0.150947    0.0 0 12      
+N1  I    112936.714213   0.342426    0.0 0 12      
+N1  Br   4836.351975893  0.3352375  0.0 0 12
+C1  Br   94836.351975893 0.3352375  0.0 0 12
 harmonic intra bond kcal 
 C1  N1   587.200012     1.49899995 0 
 C1  H1   677.400024     1.09099996 0 
@@ -46,12 +53,18 @@ nobond H1  core N1  core
 nobond H2  core C1  core
 nobond Pb  core Pb  core
 nobond I   core  I  core
+nobond Br  core Br  core
 nobond I   core Pb  core
+nobond Br  core Pb  core
 nobond Pb  core C1  core
 nobond Pb  core N1  core
 nobond Pb  core H1  core
 nobond Pb  core H2  core
-nobond I  core C1  core
-nobond I  core N1  core
-nobond I  core H1  core
-nobond I  core H2  core
+nobond I  core C1   core
+nobond Br core C1   core
+nobond I  core N1   core
+nobond Br core N1   core
+nobond I  core H1   core
+nobond Br core H1   core
+nobond I  core H2   core
+nobond Br core H2   core
