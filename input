@@ -8,8 +8,8 @@ xxxxxxxxx4 A_buck
 xxxxxxxxx5 rho_buck
 xxxxxxxxx6 C_buck
 xxxxxxxxxx E_shift
-ffit? .true.
-refit .true.
+ffit? .false.
+refit .false.
 01000111110101110100011110110001
 00111110100110101010110011101010
 00000000000000000000000000000000
