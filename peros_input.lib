@@ -25,8 +25,8 @@ H2  Pb 0.0140  2.70999  0   12
 H2  I  0.0574  2.75000  0   12  
 buck inter kcal
 Pb  Pb 70359906.629702  0.131258    0.0 0 12            
-Pb  Br   xxxxxxxxx1  xxxxxxxxx2   xxxxxxxxx3   0 12 # 7.38926234E+09  4.05318387E-05   0.0
-Br  Br   xxxxxxxxx4  xxxxxxxxx5   xxxxxxxxx6   0 12 # 24575.9688      0.484374017       0.0
+Pb  Br   xxxxxxxxx1  xxxxxxxxx2   xxxxxxxxx3   0 12 
+Br  Br   xxxxxxxxx4  xxxxxxxxx5   xxxxxxxxx6   0 12 
 Pb  I    103496.133010  0.321737    0.0 0 12    
 I   I     22793.338582     0.482217  696.949542 0 12 
 C1  Pb 32690390.937995  0.150947    0.0 0 12      

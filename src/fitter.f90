@@ -262,7 +262,7 @@ module GeometricProperties
   GULPFilename=CIFFiles%filename(1:Clen_trim(CIFFiles%filename))//extension
   GULPFilename=adjustl(GULPfilename)
   open(u,file=GULPFilename)
-  write(u,'(a)')'single conv molq qok'
+  write(u,'(a)')'single conv mol'
   write(u,'(A)')'cell'
   write(u,'(6(f9.5,1x))') (CIFFiles%cell_0(i) , i=1,6)
   write(u,'(A)')'fractional'
