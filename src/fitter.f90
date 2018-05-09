@@ -288,7 +288,7 @@ module GeometricProperties
   character(len=2)   :: zlz
   obs_energy_min=minval(CIFFiles%obs_energy)
   open(u,file=GULPFilename)
-  write(u,'(a)')'fit conv molq'
+  write(u,'(a)')'fit conv molecule'
   do i=1,n_files
    write(u,'(A)')'cell'
    write(u,'(6(f9.5,1x))') (CIFFiles(i)%cell_0(k) , k=1,6)
@@ -721,7 +721,12 @@ module mod_genetic
     funk=ajuste(2,i)
     select case(funk)
      case("A_buck")
-      if (phenotype(i)<=1e2.or.isnan(phenotype(i)).or.phenotype(i)>=1e10)then
+      if (phenotype(i)<=1e-2.or.isnan(phenotype(i)).or.phenotype(i)>=1e15)then
+       penalty=infinite
+       exit refer
+      end if
+     case("A_lj")
+      if (phenotype(i)<=1e-5.or.isnan(phenotype(i)).or.phenotype(i)>=1e10)then
        penalty=infinite
        exit refer
       end if
@@ -731,15 +736,15 @@ module mod_genetic
        exit refer
       end if
      case("C_buck")
-      if (phenotype(i)<0.0.or.phenotype(i)>1e5.or.isnan(phenotype(i)))then 
+      if(phenotype(i)<0.0.or.phenotype(i)>1e7.or.isnan(phenotype(i)))then 
        penalty=infinite
        exit refer
       end if
-     !case("E_shift")
-     ! if(phenotype(i)>=maxval(CIFFiles%obs_energy))then
-     !  penalty=infinite
-     !  exit refer
-     ! end if
+     case("E_shift")
+      if(phenotype(i)>=maxval(CIFFiles%obs_energy))then
+       penalty=infinite
+       exit refer
+      end if
     end select
    end if phys_constrains
   end do refer
@@ -753,7 +758,6 @@ module mod_genetic
    if(i .le. n_files)then
     u=get_file_unit(444)
     call output_gulp(u,CIFFiles(i),filename(i))
-    !~/GULP-4.4/Src/gulp ~/GULP-4.2.0/Src/gulp-4.2.0 
     write(line,*)"~/bin/gulp < ",filename(i)(1:Clen_trim(filename(i)))," > ",&
      filename(i)(1:Clen_trim(filename(i))),".gout "
     call system(line)
@@ -784,7 +788,8 @@ module mod_genetic
   else
    fitness = fitness + penalty
   end if calgulp
-  !call system("rm struc/*.tmp struc/*.gout")
+  !call system("rm if [ $(echo '$(ls *.tmp  | wc -l) > 0' | bc -l) == 1 ] ; then rm -rf *.tmp  ; fi")
+  !call system("rm if [ $(echo '$(ls *.gout | wc -l) > 0' | bc -l) == 1 ] ; then rm -rf *.gout ; fi")
   return
  end function Fitness
 
@@ -853,11 +858,11 @@ module mod_genetic
   return
  end subroutine SortByFitness
 
- integer function Biodiversity( compound, animalito, suma  )
+ integer function Biodiversity( compound, animalito)
   implicit none
   integer,intent(in)             :: Compound
   type(typ_ga), intent(in)       :: animalito(1:ga_size)
-  integer,intent(out)            :: suma
+  integer                        :: suma
   integer                        :: i,j,k,cont
   character(len=20)              :: mode = 'Normal'
   logical                        :: flag = .false.
@@ -868,9 +873,10 @@ module mod_genetic
    case('Normal')
     suma=0
     Biodiversity = 0
+    suma=0.5*ga_size*ga_size-ga_size
     do k =1,ga_size
      do j=k+1,ga_size 
-      suma = suma + 1
+      !suma = suma + 1
       if( animalito(k)%genotype(1:32*np(Compound)) == animalito(j)%genotype(1:32*np(Compound)) )then
        Biodiversity = Biodiversity + 1
       end if
@@ -1022,7 +1028,7 @@ module mod_genetic
   implicit none
   integer,intent(in)       :: Compound, Seed,n_files
   type(CIFFile),intent(inout) :: CIFFiles(n_files)
-  integer,parameter  :: maxstep = 100, minstep = 10
+  integer,parameter  :: maxstep = 1000, minstep = 10
   integer            :: kk, ii, i, k,vgh
   real               :: diff = 0.0, fit0 = 0.0
   integer            :: eps 
@@ -1042,13 +1048,13 @@ module mod_genetic
    call Swap()
    call SortByFitness()
   end if
-  call WriteCitizen(1,ii,eps,compound,0, vgh )
+  call WriteCitizen(1,ii,1,compound,kk, int(0.5*ga_size*ga_size-ga_size) )
   converge: do while ( .true. )
    ii=ii+1
    call SortByFitness()
-   call WriteCitizen(1,ii,eps,compound,kk, vgh )
+   eps = Biodiversity( compound, children)
    diff = eps
-   eps = Biodiversity( compound, children, vgh )
+   call WriteCitizen(1,ii,eps,compound,kk, int(0.5*ga_size*ga_size-ga_size) )
    !fire: if ( FlagFire ) then
    ! if ( ii >= minstep .and. parents(1)%fitness <= TolFire ) exit converge
    !else

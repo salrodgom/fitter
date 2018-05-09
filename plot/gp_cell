@@ -1,0 +1,15 @@
+#!/usr/bin/gnuplot -persist
+set term postscript eps color enhanced blacktext 'Helvetica,24'
+set output 'cell.eps'
+set encoding utf8
+set xlabel "Lattice Constant [Å]"
+set ylabel "Energy/Atom [eV]" 
+set yrange [ 0.0 :  ] noreverse nowriteback
+set locale "en_GB.UTF-8"
+plot 'cell_energy_expansion_gulp_ini.txt' u ($4/2):(($2+270.29477998)/(2*2*2*12)) w p pt 6 lc rgb 'green' title 'MYP potential GULP',\
+     'cell_energy_expansion_gulp_ini.txt' u ($4/2):(($2+270.29477998)/(2*2*2*12)) s cs lc rgb 'green' notitle,\
+     'cell_energy_expansion_gulp.txt'     u ($4/2):(($2+274.25057464)/(2*2*2*12)) w p pt 6 lc rgb 'red' title 'MYP potential GULP new',\
+     'cell_energy_expansion_gulp.txt'     u ($4/2):(($2+274.25057464)/(2*2*2*12)) s cs lc rgb 'red' notitle,\
+     'cell_energy_expansion_gulp_ini.txt' u ($4/2):(($1+.53823090E+02)/12.0) w p lc rgb 'black' title 'DFT Own',\
+     'cell_energy_expansion_gulp_ini.txt' u ($4/2):(($1+.53823090E+02)/12.0) s cs lc rgb 'black' notitle
+#    EOF
