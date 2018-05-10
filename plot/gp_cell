@@ -6,10 +6,16 @@ set xlabel "Lattice Constant [Å]"
 set ylabel "Energy/Atom [eV]" 
 set yrange [ 0.0 :  ] noreverse nowriteback
 set locale "en_GB.UTF-8"
+#emin=270.46727894
+emin=257.11796431
+b=0.0
+c=5.8
+d=0.0
+e=5.8
+#fit b*(x-c)+d*(x-e)**2 'cell_energy_expansion_gulp.txt'     u ($4/2):(($2+emin)/(2*2*2*12)) via b,c,d,e
 plot 'cell_energy_expansion_gulp_ini.txt' u ($4/2):(($2+270.29477998)/(2*2*2*12)) w p pt 6 lc rgb 'green' title 'MYP potential GULP',\
      'cell_energy_expansion_gulp_ini.txt' u ($4/2):(($2+270.29477998)/(2*2*2*12)) s cs lc rgb 'green' notitle,\
-     'cell_energy_expansion_gulp.txt'     u ($4/2):(($2+274.25057464)/(2*2*2*12)) w p pt 6 lc rgb 'red' title 'MYP potential GULP new',\
-     'cell_energy_expansion_gulp.txt'     u ($4/2):(($2+274.25057464)/(2*2*2*12)) s cs lc rgb 'red' notitle,\
+     'cell_energy_expansion_gulp.txt'     u ($4/2):(($2+emin)/(2*2*2*12)) w lp pt 6 lc rgb 'red' title 'MYP potential GULP new',\
      'cell_energy_expansion_gulp_ini.txt' u ($4/2):(($1+.53823090E+02)/12.0) w p lc rgb 'black' title 'DFT Own',\
      'cell_energy_expansion_gulp_ini.txt' u ($4/2):(($1+.53823090E+02)/12.0) s cs lc rgb 'black' notitle
 #    EOF

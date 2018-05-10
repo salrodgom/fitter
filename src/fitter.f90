@@ -693,6 +693,19 @@ module mod_genetic
   return
  end function get_file_unit
 !
+ subroutine WriteLib(compound,phenotype)
+  implicit none
+  real, intent(in)    :: phenotype(maxnp)
+  integer,intent(in)  :: compound
+  character(len=200)  :: line
+  integer             :: i
+  call system("cp peros_input.lib peros.lib")
+  referw: do i = 1,np(compound)
+   write(line,*)"sed -i 's/",ajuste(1,i)(1:Clen_trim(ajuste(1,i))),"/",phenotype(i),"/g' peros.lib"
+   call system(line)
+  end do referw 
+ end subroutine WriteLib
+!
  real function Fitness(phenotype,compound,n_files,CIFFiles)
   use omp_lib
   implicit none
@@ -701,6 +714,7 @@ module mod_genetic
   type(CIFfile),intent(inout) :: CIFFIles(n_files)
   integer             :: i,compound,k = 0, u,ii,np_real
   real                :: a(0:np(compound)-1),xx,yy,penalty,obs_energy_min,cal_energy_min,obs_energy_max
+  real                :: partition = 0.0
   character(len=100)  :: funk,filename(n_files)
   character(len=200)  :: line
   logical             :: flagzero = .false.
@@ -715,6 +729,7 @@ module mod_genetic
    fitness = 0.0
   !end if
   refer: do i = 1,np(compound)
+   !write(6,*)"sed -i 's/",ajuste(1,i)(1:Clen_trim(ajuste(1,i))),"/",phenotype(i),"/g' peros.lib"
    write(line,*)"sed -i 's/",ajuste(1,i)(1:Clen_trim(ajuste(1,i))),"/",phenotype(i),"/g' peros.lib"
    call system(line)
    phys_constrains: if ( physical_constrains ) then
@@ -731,7 +746,7 @@ module mod_genetic
        exit refer
       end if
      case("rho_buck")
-      if (phenotype(i)<1.0e-8.or.phenotype(i)>1.0.or.isnan(phenotype(i)))then
+      if (phenotype(i)<1.0e-3.or.phenotype(i)>1.0.or.isnan(phenotype(i)))then
        penalty=infinite
        exit refer
       end if
@@ -782,12 +797,23 @@ module mod_genetic
   end do scan_
   !$omp end parallel
   obs_energy_min=minval(CIFFiles%obs_energy)
+  partition=sum(exp(-CIFFiles(1:n_files)%obs_energy/10.0/obs_energy_min))
   cal_energy_min=minval(CIFFiles%cal_energy)
-  fitness = fitness + sum(abs( CIFFiles(1:n_files)%obs_energy-obs_energy_min -&
-   (CIFFiles(1:n_files)%cal_energy-cal_energy_min))**2)/real(2*n_files)
+  !fitness = fitness + sum((exp(-CIFFiles(1:n_files)%obs_energy/10.0/obs_energy_min)/partition)*&
+  ! abs(CIFFiles(1:n_files)%obs_energy-obs_energy_min -&
+  ! (CIFFiles(1:n_files)%cal_energy-cal_energy_min))**2)/real(2*n_files)
+  do i=1,n_files
+   fitness = fitness + &
+    !+(exp(-CIFFiles(i)%obs_energy/obs_energy_min)/partition)*&
+    abs(CIFFiles(i)%obs_energy-obs_energy_min-(CIFFiles(i)%cal_energy-cal_energy_min))
+  !**2)/real(2*n_files)
+  end do
+  fitness=fitness**2/real(2*n_files)
   else
    fitness = fitness + penalty
   end if calgulp
+  !write(6,*)'Rosenbluth:',(exp(-CIFFiles(j)%obs_energy/(10*obs_energy_min))/partition, j=1,n_files)
+  !write(6,*)'Suma:',sum( exp(-CIFFiles(1:n_files)%obs_energy/10.0/obs_energy_min)/partition )
   !call system("rm if [ $(echo '$(ls *.tmp  | wc -l) > 0' | bc -l) == 1 ] ; then rm -rf *.tmp  ; fi")
   !call system("rm if [ $(echo '$(ls *.gout | wc -l) > 0' | bc -l) == 1 ] ; then rm -rf *.gout ; fi")
   return
@@ -1071,6 +1097,8 @@ module mod_genetic
    call Swap()
    fit0 = parents(1)%fitness
   end do converge
+  call SortByFitness()
+  call WriteLib(compound,children(1)%phenotype)
   do i = 0, np( compound )-1
    param( compound,i ) = children(1)%phenotype(i+1)
   end do
