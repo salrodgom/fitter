@@ -29,7 +29,7 @@ while read line ; do
   cell_parameters=$(echo "$a $b $c $alpha $beta $gamma")
   echo ${energy_VASP} $energy $gnorm ${cell_parameters} >> cell_energy_expansion_gulp.txt
  fi
-done < ../list
+done < list
 sort -gk1 cell_energy_expansion_gulp.txt | sed 's/CRYST1 //g' > c
 mv c cell_energy_expansion_gulp.txt
 exit 0
