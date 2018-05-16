@@ -1,0 +1,49 @@
+Bond Coeffs kcal/mol/A/A
+#
+Zn   N1   harmonic        86.0            1.987
+C1   H1   harmonic        338.7           1.0910
+N1   H2   harmonic        369.0           1.0330
+N1   C1   harmonic        293.6           1.4990
+#
+Angle Coeffs kcal/mol/rad/rad
+#
+N1   Zn   N1   harmonic  10.5  109.470
+H1   C1   H1   harmonic  39.0  110.740
+H2   N1   C1   harmonic  46.2  110.110
+H2   N1   H2   harmonic  40.5  108.110
+N1   C1   H1   harmonic  49.0  107.910
+#
+Dihedral Coeffs   kcal/mol
+#
+H2   N1   C1   H1   fourier        1    0.0778    3      0.0
+#    
+Improper Coeffs   kcal/mol
+#    
+Zn   N1   N1   N1   cvff     0.0       +1      0 # none
+#
+Pair Coeffs      kcal/mol
+# N*(N+1)/2 lines
+Br   Br    lj/cut/coul/long 0.0 0.0
+C1   C1    lj/cut/coul/long 0.1094  3.39970           
+C1   N1    lj/cut/coul/long 0.1364  3.32480           
+C1   H1    lj/cut/coul/long 0.0414  2.67980           
+C1   H2    lj/cut/coul/long 0.0414  2.23440           
+C1   Pb    buck/coul/long  32690390.937995  0.150947    0.0      
+C1   I     buck/coul/long    112936.714213  0.342426    0.0      
+N1   N1    lj/cut/coul/long 0.1700  3.25000           
+N1   H1    lj/cut/coul/long 0.0517  2.60500           
+N1   H2    lj/cut/coul/long 0.0517  2.15950           
+N1   Pb    buck/coul/long 32690390.937995  0.150947    0.0      
+N1   I     buck/coul/long   112936.714213  0.342426    0.0      
+H1   H1    lj/cut/coul/long 0.0157  1.96000           
+H1   H2    lj/cut/coul/long 0.0157  1.51450           
+H1   Pb    lj/cut/coul/long 0.0140  2.26454           
+H1   I     lj/cut/coul/long 0.0574  3.10000           
+H2   H2    lj/cut/coul/long 0.0157  1.06910           
+H2   Pb    lj/cut/coul/long 0.0140  2.70999           
+H2   I     lj/cut/coul/long 0.0574  2.75000           
+Pb   Pb    buck/coul/long 70359906.629702  0.131258    0.0      
+Pb   I     buck/coul/long   103496.133010  0.321737    0.0      
+I    I     buck/coul/long    22793.338582  0.482217  696.949542 
+#
+End  

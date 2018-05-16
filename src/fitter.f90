@@ -1,7 +1,7 @@
 module types
  implicit none
  integer,parameter   :: max_atom_number = 1000
- integer,parameter   :: maxnp = 10, maxcompounds = 1, maxdata = 1000
+ integer,parameter   :: maxnp = 20, maxcompounds = 1, maxdata = 1000
  integer,parameter   :: maxlinelength=maxnp*32
  type   CIFfile
   character(len=100) :: filename
@@ -262,7 +262,7 @@ module GeometricProperties
   GULPFilename=CIFFiles%filename(1:Clen_trim(CIFFiles%filename))//extension
   GULPFilename=adjustl(GULPfilename)
   open(u,file=GULPFilename)
-  write(u,'(a)')'single conv mol'
+  write(u,'(a)')'single conv'
   write(u,'(A)')'cell'
   write(u,'(6(f9.5,1x))') (CIFFiles%cell_0(i) , i=1,6)
   write(u,'(A)')'fractional'
@@ -701,7 +701,7 @@ module mod_genetic
   integer             :: i
   call system("cp peros_input.lib peros.lib")
   referw: do i = 1,np(compound)
-   write(line,*)"sed -i 's/",ajuste(1,i)(1:Clen_trim(ajuste(1,i))),"/",phenotype(i),"/g' peros.lib"
+   write(line,*)"sed -i 's/",trim(ajuste(1,i)(1:Clen_trim(ajuste(1,i)))),"/",phenotype(i),"/g' peros.lib"
    call system(line)
   end do referw 
  end subroutine WriteLib
@@ -712,28 +712,22 @@ module mod_genetic
   real, intent(in)    :: phenotype(maxnp)
   integer,intent(in)  :: n_files
   type(CIFfile),intent(inout) :: CIFFIles(n_files)
-  integer             :: i,compound,k = 0, u,ii,np_real
+  integer             :: i,j,compound,k = 0, u,ii,np_real
   real                :: a(0:np(compound)-1),xx,yy,penalty,obs_energy_min,cal_energy_min,obs_energy_max
   real                :: partition = 0.0
-  character(len=100)  :: funk,filename(n_files)
+  character(len=100)  :: funk = " ",filename(n_files)
   character(len=200)  :: line
   logical             :: flagzero = .false.
   real                :: infinite = 3.4028e38
   call system("cp peros_input.lib peros.lib")
   penalty=0.0
-  !if( flag_shift ) then 
-  ! np_real = np(compound) - 1
-  ! fitness = phenotype(np(compound))
-  !else
-  ! np_real = np(compound) 
-   fitness = 0.0
-  !end if
+  fitness = 0.0
   refer: do i = 1,np(compound)
-   !write(6,*)"sed -i 's/",ajuste(1,i)(1:Clen_trim(ajuste(1,i))),"/",phenotype(i),"/g' peros.lib"
-   write(line,*)"sed -i 's/",ajuste(1,i)(1:Clen_trim(ajuste(1,i))),"/",phenotype(i),"/g' peros.lib"
-   call system(line)
+   funk = " "
    phys_constrains: if ( physical_constrains ) then
-    funk=ajuste(2,i)
+    funk=ajuste(2,i)(1:Clen_trim(ajuste(2,i)))
+    funk=adjustl(funk)
+    !write(6,*) funk,phenotype(i)
     select case(funk)
      case("A_buck")
       if (phenotype(i)<=1e-2.or.isnan(phenotype(i)).or.phenotype(i)>=1e15)then
@@ -742,6 +736,16 @@ module mod_genetic
       end if
      case("A_lj")
       if (phenotype(i)<=1e-5.or.isnan(phenotype(i)).or.phenotype(i)>=1e10)then
+       penalty=infinite
+       exit refer
+      end if
+     case("epsilon")
+      if (phenotype(i)<0.001.or.isnan(phenotype(i)).or.phenotype(i)>1.0)then
+       penalty=infinite
+       exit refer
+      end if
+     case("sigma")
+      if (phenotype(i)<1.0.or.isnan(phenotype(i)).or.phenotype(i)>5.5)then
        penalty=infinite
        exit refer
       end if
@@ -762,6 +766,8 @@ module mod_genetic
       end if
     end select
    end if phys_constrains
+   write(line,*)"sed -i 's/",trim(ajuste(1,i)(1:Clen_trim(ajuste(1,i)))),"/",phenotype(i),"/g' peros.lib"
+   call system(line)
   end do refer
   calgulp: if ( penalty < 1.0 ) then
   !$omp parallel default(private) shared(n_files, CIFFiles, datas, filename, u,ii, line)
@@ -779,8 +785,8 @@ module mod_genetic
     write(line,*)"grep 'Total lattice energy       =' ",filename(i)(1:Clen_trim(filename(i))),&
      ".gout | grep 'eV' | awk '{print $5}' > ",filename(i)(1:Clen_trim(filename(i))),".tmp "
     call system(line)
-    write(line,*)"grep 'Total lattice energy       =' ",filename(i)(1:Clen_trim(filename(i))),&
-     ".gout | grep 'eV' | awk '{print $5}' > ",filename(i)(1:Clen_trim(filename(i))),".tmp "
+    write(line,*)"grep 'ERROR' ",filename(i)(1:Clen_trim(filename(i))),&
+     ".gout | wc -l | awk '{print $1}' >> ",filename(i)(1:Clen_trim(filename(i))),".tmp "
     call system(line)
     u=get_file_unit(444)
     open(u,file=filename(i)(1:Clen_trim(filename(i)))//".tmp")
@@ -790,6 +796,8 @@ module mod_genetic
     else
      read(line,*) CIFFiles(i)%cal_energy
     end if
+    read(u,'(a)') j
+    if (j>0) CIFFiles(i)%cal_energy=infinite
     close(u)
     end if
    !$omp end critical
@@ -810,6 +818,7 @@ module mod_genetic
   end do
   fitness=fitness**2/real(2*n_files)
   else
+   !write(6,*)'Impossible'
    fitness = fitness + penalty
   end if calgulp
   !write(6,*)'Rosenbluth:',(exp(-CIFFiles(j)%obs_energy/(10*obs_energy_min))/partition, j=1,n_files)
@@ -1064,7 +1073,7 @@ module mod_genetic
   parents =>  pop_alpha
   children => pop_beta
   if ( refit_flag ) then
-   do i = 1, 2
+   do i = 1, GA_ELITISTS
     parents(i)%genotype=string_IEEE(compound)
     children(i)%genotype=string_IEEE(compound)
     call UpdateCitizen(parents(i),compound,n_files,CIFFiles)
@@ -1081,18 +1090,12 @@ module mod_genetic
    eps = Biodiversity( compound, children)
    diff = eps
    call WriteCitizen(1,ii,eps,compound,kk, int(0.5*ga_size*ga_size-ga_size) )
-   !fire: if ( FlagFire ) then
-   ! if ( ii >= minstep .and. parents(1)%fitness <= TolFire ) exit converge
-   !else
-    if( ii>=minstep .and. parents(1)%fitness <= 0.1 .and. abs(parents(1)%fitness-fit0) <= 1e-4)then
-    !if( abs(diff - eps) <= 1e-2 .and. ii >= minstep .and. &
-    ! parents(1)%fitness - fit0 == 0 ) then
-     kk = kk + 1
-    else
-     kk = 0
-    end if
-    if ( ii >= maxstep .or. kk >= 10 ) exit converge
-   !end if fire
+   if( ii>=minstep .and. parents(1)%fitness <= 0.1 .and. abs(parents(1)%fitness-fit0) <= 1e-4)then
+    kk = kk + 1
+   else
+    kk = 0
+   end if
+   if ( ii >= maxstep .or. kk >= 10 ) exit converge
    call Mate(compound,n_files,CIFFiles)
    call Swap()
    fit0 = parents(1)%fitness
@@ -1129,6 +1132,7 @@ program fitter
  end if
  write(6,'("Random Seed:",1x,i10)') seed
  !call GenerateCIFFileList()
+ !First run for debuging
  call ReadListOfCIFFiles(n_files)
  allocate( CIFFiles(1:n_files) )
  call ReadCIFFiles(n_files,CIFFiles)

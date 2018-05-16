@@ -1,0 +1,100 @@
+
+
+*******************************************************************************
+Thu May 10 19:12:12 2018
+
+
+FIT:    data read from 'cell_energy_expansion_gulp.txt'     u ($4/2):(($2+emin)/(2*2*2*12))
+        format = x:z
+        #datapoints = 17
+        residuals are weighted equally (unit weight)
+
+function used for fitting: a+b*(x-c)+d*(x-e)**2
+fitted parameters initialized with current variable values
+
+Warning: Initial value of parameter 'a' is zero.
+Warning: Initial value of parameter 'b' is zero.
+iter      chisq       delta/lim  lambda   a             b             c             d             e            
+   0 3.9588468938e-01   0.00e+00  1.62e+00    1.000000e-30   1.000000e-30   5.800000e+00   1.000000e+00   5.800000e+00
+BREAK: Singular matrix in Invert_RtR
+
+*******************************************************************************
+Thu May 10 19:12:49 2018
+
+
+FIT:    data read from 'cell_energy_expansion_gulp.txt'     u ($4/2):(($2+emin)/(2*2*2*12))
+        format = x:z
+        #datapoints = 17
+        residuals are weighted equally (unit weight)
+
+function used for fitting: b*(x-c)+d*(x-e)**2
+fitted parameters initialized with current variable values
+
+Warning: Initial value of parameter 'b' is zero.
+Warning: Initial value of parameter 'd' is zero.
+iter      chisq       delta/lim  lambda   b             c             d             e            
+   0 1.3424555047e-02   0.00e+00  1.78e-01    1.000000e-30   5.800000e+00   1.000000e-30   5.800000e+00
+   5 5.7326412591e-04  -3.93e-06  1.78e-06   -8.574298e-02   5.946851e+00   2.526845e-01   5.874604e+00
+
+After 5 iterations the fit converged.
+final sum of squares of residuals : 0.000573264
+rel. change during last iteration : -3.93289e-11
+
+degrees of freedom    (FIT_NDF)                        : 13
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.00664058
+variance of residuals (reduced chisquare) = WSSR/ndf   : 4.40972e-05
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+b               = -0.085743        +/- 8.222e+10    (9.589e+13%)
+c               = 5.94685          +/- 6.646e+10    (1.118e+12%)
+d               = 0.252685         +/- 0.0257       (10.17%)
+e               = 5.8746           +/- 1.627e+11    (2.769e+12%)
+
+correlation matrix of the fit parameters:
+                b      c      d      e      
+b               1.000 
+c               1.000  1.000 
+d              -0.659 -0.659  1.000 
+e               1.000  1.000 -0.659  1.000 
+
+
+*******************************************************************************
+Thu May 10 19:12:57 2018
+
+
+FIT:    data read from 'cell_energy_expansion_gulp.txt'     u ($4/2):(($2+emin)/(2*2*2*12))
+        format = x:z
+        #datapoints = 17
+        residuals are weighted equally (unit weight)
+
+function used for fitting: b*(x-c)+d*(x-e)**2
+fitted parameters initialized with current variable values
+
+Warning: Initial value of parameter 'b' is zero.
+Warning: Initial value of parameter 'd' is zero.
+iter      chisq       delta/lim  lambda   b             c             d             e            
+   0 1.3424555047e-02   0.00e+00  1.78e-01    1.000000e-30   5.800000e+00   1.000000e-30   5.800000e+00
+   5 5.7326412591e-04  -3.93e-06  1.78e-06   -8.574298e-02   5.946851e+00   2.526845e-01   5.874604e+00
+
+After 5 iterations the fit converged.
+final sum of squares of residuals : 0.000573264
+rel. change during last iteration : -3.93289e-11
+
+degrees of freedom    (FIT_NDF)                        : 13
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.00664058
+variance of residuals (reduced chisquare) = WSSR/ndf   : 4.40972e-05
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+b               = -0.085743        +/- 8.222e+10    (9.589e+13%)
+c               = 5.94685          +/- 6.646e+10    (1.118e+12%)
+d               = 0.252685         +/- 0.0257       (10.17%)
+e               = 5.8746           +/- 1.627e+11    (2.769e+12%)
+
+correlation matrix of the fit parameters:
+                b      c      d      e      
+b               1.000 
+c               1.000  1.000 
+d              -0.659 -0.659  1.000 
+e               1.000  1.000 -0.659  1.000 

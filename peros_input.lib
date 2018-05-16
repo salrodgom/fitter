@@ -1,11 +1,12 @@
-species 7
-C1 core  0.7710
-N1 core -1.1000
-H1 core  0.0230
-H2 core  0.5400
-Pb core  2.0300
-I  core -1.1300
-Br core -1.1300
+species 8
+C1 core  0.566911765 # 0.7710
+N1 core -0.808823531 # -1.1000
+H1 core  0.016911765 # 0.0230
+H2 core  0.397058824 # 0.5400
+Pb core  1.492647059 # 2.0300
+I  core -0.830882353 # -1.1300
+Br core -0.830882353 # -1.1300
+Cs core  1.0         # 1.36
 lennard 12 6 epsilon x13 kcal
 C1  C1 0.1094  3.39970  0   12  
 C1  N1 0.1364  3.32480  0   12  
@@ -18,23 +19,23 @@ H1  H1 0.0157  1.96000  0   12
 H1  H2 0.0157  1.51450  0   12  
 H1  Pb 0.0140  2.26454  0   12  
 H1  I  0.0574  3.10000  0   12  
-H2  Br xxxxxxxx10 2.45535714285714 0 12
-H1  Br xxxxxxxx10 2.76785714285714 0 12
+H2  Br 0.0512499996 2.45535714285714 0 12
+H1  Br 0.0512499996 2.76785714285714 0 12
 H2  H2 0.0157  1.06910  0   12  
 H2  Pb 0.0140  2.70999  0   12  
 H2  I  0.0574  2.75000  0   12
 buck inter kcal
 Pb  Pb 70359906.629702   0.131258    0.0 0 12            
-Pb  Br   xxxxxxxxx1 xxxxxxxxx2 xxxxxxxxx3 0 12 
-Br  Br   xxxxxxxxx4 xxxxxxxxx5 xxxxxxxxx6 0 12 
+Pb  Br   xxxxxxxxx1 xxxxxxxxx2 0.0 0 12 
+Br  Br   xxxxxxxxx4 xxxxxxxxx5 0.0 0 12 
 Pb  I    103496.133010   0.321737    0.0 0 12    
 I   I     22793.338582   0.482217  696.949542 0 12 
 C1  Pb 32690390.937995   0.150947    0.0 0 12      
 C1  I    112936.714213   0.342426    0.0 0 12      
 N1  Pb 32690390.937995   0.150947    0.0 0 12      
 N1  I    112936.714213   0.342426    0.0 0 12
-N1  Br   xxxxxxxxx7 xxxxxxxxx8 xxxxxxxxx9 0 12
-C1  Br   xxxxxxxxx7 xxxxxxxxx8 xxxxxxxxx9 0 12
+N1  Br   xxxxxxxxx7 xxxxxxxxx8 0.0 0 12
+C1  Br   xxxxxxxxx7 xxxxxxxxx8 0.0 0 12
 harmonic intra bond kcal 
 C1  N1   587.200012     1.49899995 0 
 C1  H1   677.400024     1.09099996 0 

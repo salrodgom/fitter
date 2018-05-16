@@ -1,0 +1,254 @@
+********************************************************************************
+*                       GENERAL UTILITY LATTICE PROGRAM                        *
+*                                 Julian Gale                                  *
+*                      Nanochemistry Research Institute                        *
+*                           Department of Chemistry                            *
+*                    Curtin University, Western Australia                      *
+********************************************************************************
+* Version = 4.4.3 * Last modified =  1st March 2017                            *
+********************************************************************************
+*  single       - perform a single point run                                   *
+*  conv         - constant volume calculation                                  *
+*  molecule     - molecule option activated, Coulomb subtract within molecule  *
+********************************************************************************
+
+  Job Started  at 01:24.03 16th May        2018                               
+
+  Number of CPUs =     1
+
+  Host name      = navaja                                  
+
+
+  Total number of configurations input =   1
+
+********************************************************************************
+*  Input for Configuration =   1                                               *
+********************************************************************************
+
+  Formula = C2N2H12Pb2I6                                                
+
+  Number of irreducible atoms/shells =      24
+
+
+  Total number atoms/shells =      24
+
+  Dimensionality = 3               :  Bulk   
+
+
+
+  Supercell dimensions :  x =   2  y =   1  z =   1
+
+  Cartesian lattice vectors (Angstroms) :
+
+       12.000000    0.000000    0.000000
+        0.000000    6.000000    0.000000
+        0.000000    0.000000    6.000000
+
+  Cell parameters (Angstroms/Degrees):
+
+  a =      12.0000    alpha =  90.0000
+  b =       6.0000    beta  =  90.0000
+  c =       6.0000    gamma =  90.0000
+
+  Initial cell volume =         432.000000 Angs**3
+
+  Temperature of configuration =  0.000     K 
+
+  Pressure of configuration =         0.000 GPa 
+
+  Fractional coordinates of asymmetric unit :
+
+--------------------------------------------------------------------------------
+   No.  Atomic       x           y          z         Charge      Occupancy
+        Label      (Frac)      (Frac)     (Frac)        (e)         (Frac)  
+--------------------------------------------------------------------------------
+      1 C1    c    0.457740    0.999880    0.964590     0.56691    1.000000    
+      2 C1    c    0.957740    0.999880    0.964590     0.56691    1.000000    
+      3 N1    c    0.069790    0.999810    0.065810    -0.80882    1.000000    
+      4 N1    c    0.569790    0.999810    0.065810    -0.80882    1.000000    
+      5 H1    c    0.466455    0.999800    0.782210     0.01691    1.000000    
+      6 H1    c    0.966455    0.999800    0.782210     0.01691    1.000000    
+      7 H1    c    0.412710    0.150200    0.018520     0.01691    1.000000    
+      8 H1    c    0.912710    0.150200    0.018520     0.01691    1.000000    
+      9 H1    c    0.412635    0.849680    0.018640     0.01691    1.000000    
+     10 H1    c    0.912635    0.849680    0.018640     0.01691    1.000000    
+     11 H2    c    0.115820    0.140390    0.018840     0.39706    1.000000    
+     12 H2    c    0.615820    0.140390    0.018840     0.39706    1.000000    
+     13 H2    c    0.115770    0.859180    0.018890     0.39706    1.000000    
+     14 H2    c    0.615770    0.859180    0.018890     0.39706    1.000000    
+     15 H2    c    0.068155    0.999860    0.239270     0.39706    1.000000    
+     16 H2    c    0.568155    0.999860    0.239270     0.39706    1.000000    
+     17 Pb    c    0.258460    0.500440    0.492370     1.49265    1.000000    
+     18 Pb    c    0.758460    0.500440    0.492370     1.49265    1.000000    
+     19 I     c    0.230870    0.500000    0.990760    -0.83088    1.000000    
+     20 I     c    0.730870    0.500000    0.990760    -0.83088    1.000000    
+     21 I     c    0.230125    0.000350    0.547170    -0.83088    1.000000    
+     22 I     c    0.730125    0.000350    0.547170    -0.83088    1.000000    
+     23 I     c    0.003085    0.499740    0.440070    -0.83088    1.000000    
+     24 I     c    0.503085    0.499740    0.440070    -0.83088    1.000000    
+--------------------------------------------------------------------------------
+
+
+
+  Molecule list generated from bond lengths :
+
+  Bonds between the following atom types will be excluded : 
+
+   H1    Core   - H2    Core
+   H1    Core   - H1    Core
+   H2    Core   - H2    Core
+   H1    Core   - N1    Core
+   H2    Core   - C1    Core
+   Pb    Core   - Pb    Core
+   I     Core   - I     Core
+   Br    Core   - Br    Core
+   I     Core   - Pb    Core
+   Br    Core   - Pb    Core
+   C1    Core   - Pb    Core
+   N1    Core   - Pb    Core
+   H1    Core   - Pb    Core
+   H2    Core   - Pb    Core
+   C1    Core   - I     Core
+   C1    Core   - Br    Core
+   N1    Core   - I     Core
+   N1    Core   - Br    Core
+   H1    Core   - I     Core
+   H1    Core   - Br    Core
+   H2    Core   - I     Core
+   H2    Core   - Br    Core
+
+
+  Total number of molecules =     2
+
+--------------------------------------------------------------------------------
+Molecule No./:  Atoms
+Periodicity  :  
+--------------------------------------------------------------------------------
+     1  0    : C1   c     1 N1   c     4 H1   c     5 H1   c     7 H1   c     9
+             : H2   c    12 H2   c    14 H2   c    16
+     2  0    : C1   c     2 N1   c     3 H1   c     6 H1   c     8 H1   c    10
+             : H2   c    11 H2   c    13 H2   c    15
+--------------------------------------------------------------------------------
+
+
+********************************************************************************
+*  General input information                                                   *
+********************************************************************************
+
+  Species output for all configurations : 
+
+--------------------------------------------------------------------------------
+  Species    Type    Atomic    Atomic    Charge       Radii (Angs)     Library
+                     Number     Mass       (e)     Cova   Ionic  VDW   Symbol
+--------------------------------------------------------------------------------
+    C1       Core        6      12.01   0.566912   0.770  0.000  1.530          
+    N1       Core        7      14.01  -0.808824   0.750  0.000  1.480          
+    H1       Core        1       1.01   0.016912   0.370  0.000  1.080          
+    H2       Core        1       1.01   0.397059   0.370  0.000  1.080          
+    Pb       Core       82     207.20   1.492647   1.540  0.000  2.300          
+    I        Core       53     126.91  -0.830882   1.400  0.000  2.050          
+--------------------------------------------------------------------------------
+
+
+  Lattice summation method               =    Ewald          (3-D)
+                                         =    Parry          (2-D)
+                                         =    Saunders et al (1-D)
+  Accuracy factor for lattice sums       =   12.000
+
+
+  Time limit = Infinity
+
+  Maximum range for interatomic potentials =    100000.000000 Angstroms
+
+  General interatomic potentials :
+
+--------------------------------------------------------------------------------
+Atom  Types   Potential         A         B         C         D     Cutoffs(Ang)
+  1     2                                                            Min    Max 
+--------------------------------------------------------------------------------
+C1   c C1   c Lenn/es 12  6 0.421E-02  3.43      0.00      0.00     3Bond 12.000
+N1   c N1   c Lenn/es 12  6 0.297E-02  3.29      0.00      0.00     3Bond 12.000
+H1   c H1   c Lenn/es 12  6 0.191E-02  5.14      0.00      0.00     3Bond 12.000
+H2   c H2   c Lenn/es 12  6 0.192E-02  2.57      0.00      0.00     3Bond 12.000
+Pb   c Pb   c Lenn/es 12  6 0.288E-01  2.83      0.00      0.00     3Bond 12.000
+I    c I    c Lenn/es 12  6 0.109E-01  5.46      0.00      0.00     3Bond 12.000
+--------------------------------------------------------------------------------
+
+  Intramolecular potentials :
+
+--------------------------------------------------------------------------------
+Atom  Types   Potential         A         B         C         D     Cutoffs(Ang)
+  1     2                                                            Min    Max 
+--------------------------------------------------------------------------------
+C1   c N1   c Harmonic       25.5      1.50      0.00      0.00     0.000 1 Bond
+H1   c C1   c Harmonic       29.4      1.09      0.00      0.00     0.000 1 Bond
+H2   c N1   c Harmonic       32.0      1.03      0.00      0.00     0.000 1 Bond
+--------------------------------------------------------------------------------
+
+  Intramolecular Three-body potentials :
+
+  Harmonic form:
+
+--------------------------------------------------------------------------------
+Atom    Atom    Atom           Force Constants            Theta     Cutoffs  
+  1       2       3     (eVrad**-2/eVrad**-3/eVrad**-4)   (deg)  1-2  1-3  2-3
+--------------------------------------------------------------------------------
+C1    c H1    c N1    c  4.250        0.0000    0.0000   107.910     Bonded
+C1    c H1    c H1    c  3.382        0.0000    0.0000   110.740     Bonded
+N1    c H2    c C1    c  4.007        0.0000    0.0000   110.110     Bonded
+N1    c H2    c H2    c  3.513        0.0000    0.0000   108.110     Bonded
+--------------------------------------------------------------------------------
+
+  Intramolecular Four-body potentials :
+
+  Standard form:
+
+--------------------------------------------------------------------------------
+         Atom Types             Force cst Sign Phase Phi0         Cutoffs
+   1       2       3       4       (eV)                     1-2  2-3  3-4  4-1
+--------------------------------------------------------------------------------
+H1    c C1    c N1    c H2    c  0.3374E-02 +   3     0.00  Bonded              
+--------------------------------------------------------------------------------
+
+********************************************************************************
+*  Output for configuration   1                                                *
+********************************************************************************
+
+
+  Components of energy : 
+
+--------------------------------------------------------------------------------
+  Interatomic potentials     =           3.58118677 eV
+  Three-body potentials      =           0.03312285 eV
+  Four-body potentials       =           0.00000233 eV
+  Improper torsions          =           0.00000000 eV
+  Out of plane potentials    =           0.00000000 eV
+  Monopole - monopole (real) =         -10.52873939 eV
+  Monopole - monopole (recip)=         -28.41898004 eV
+  Monopole - monopole (total)=         -38.94771943 eV
+--------------------------------------------------------------------------------
+  Total lattice energy       =         -35.33340748 eV
+--------------------------------------------------------------------------------
+  Total lattice energy       =           -3409.1337 kJ/(mole unit cells)
+--------------------------------------------------------------------------------
+
+  Peak dynamic memory used =       0.53 MB 
+
+
+  Timing analysis for GULP :
+
+--------------------------------------------------------------------------------
+  Task / Subroutine                                          Time (Seconds)
+--------------------------------------------------------------------------------
+  Calculation of reciprocal space energy and derivatives          0.0005
+  Calculation of real space energy and derivatives                0.0039
+  Calculation of three-body energy and derivatives                0.0002
+  Calculation of four-body energy and derivatives                 0.0002
+  Calculation of molecules and connectivity                       0.0002
+--------------------------------------------------------------------------------
+  Total CPU time                                                  0.0079
+--------------------------------------------------------------------------------
+
+
+  Job Finished at 01:24.03 16th May        2018                               
+

@@ -1,0 +1,53 @@
+keyword molecule
+species 8
+C1 core  0.566911765 
+N1 core -0.808823531 
+H1 core  0.016911765 
+H2 core  0.397058824 
+Pb core  1.492647059 
+I  core -0.830882353 
+Br core -0.830882353 
+Cs core  1.0         
+atomab C1    8.16219673E-03     2.29852676    
+atomab N1    6.71155229E-02     2.26171231    
+atomab H1    3.61788832E-02     2.04379034    
+atomab H2    8.79741460E-03     2.07125568    
+atomab Pb   0.133416623         2.31285667    
+atomab I    0.250513852         3.92168713    
+atomab Br   0.141606048         5.14057493    
+atomab Cs    3.06802914E-02     5.14138556    
+lennard epsilon geometric all 
+0.0 12.0
+harmonic intra bond kcal 
+C1  N1  1800.200012     1.49899995 0 
+C1  H1  1877.400024     1.09099996 0 
+H2  N1  1938.000000     1.03299999 0 
+three intra bond kcal
+C1  H1 N1   300.0        107.910004   
+C1  H1 H1   300.0        110.739998   
+N1  H2 C1   300.4        110.110001   
+N1  H2 H2   300.0        108.110001   
+torsion intra bond kcal
+H1  C1  N1  H2 7.77999982E-02   3  0.0  
+nobond H1  core H2  core
+nobond H1  core H1  core
+nobond H2  core H2  core
+nobond H1  core N1  core
+nobond H2  core C1  core
+nobond Pb  core Pb  core
+nobond I   core  I  core
+nobond Br  core Br  core
+nobond I   core Pb  core
+nobond Br  core Pb  core
+nobond Pb  core C1  core
+nobond Pb  core N1  core
+nobond Pb  core H1  core
+nobond Pb  core H2  core
+nobond I  core C1   core
+nobond Br core C1   core
+nobond I  core N1   core
+nobond Br core N1   core
+nobond I  core H1   core
+nobond Br core H1   core
+nobond I  core H2   core
+nobond Br core H2   core
