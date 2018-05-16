@@ -12,7 +12,7 @@
 *  molecule     - molecule option activated, Coulomb subtract within molecule  *
 ********************************************************************************
 
-  Job Started  at 19:30.02 16th May        2018                               
+  Job Started  at 19:33.41 16th May        2018                               
 
   Number of CPUs =     1
 
@@ -250,5 +250,5 @@ H1    c C1    c N1    c H2    c  0.3374E-02 +   3     0.00  Bonded
 --------------------------------------------------------------------------------
 
 
-  Job Finished at 19:30.02 16th May        2018                               
+  Job Finished at 19:33.41 16th May        2018                               
 
