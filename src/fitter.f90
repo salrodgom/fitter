@@ -707,7 +707,7 @@ module mod_genetic
  end subroutine WriteLib
 !
  real function Fitness(phenotype,compound,n_files,CIFFiles)
-  use omp_lib
+  !use omp_lib
   implicit none
   real, intent(in)    :: phenotype(maxnp)
   integer,intent(in)  :: n_files

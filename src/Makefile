@@ -1,4 +1,3 @@
-# -fopenmp
 install:
 	gfortran fitter.f90 -o fitter
 all:
