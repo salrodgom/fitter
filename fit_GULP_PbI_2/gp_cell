@@ -6,7 +6,7 @@ set xlabel "Configuration / -"
 set ylabel "Energy/Atom [eV]" 
 set yrange [ 0.0 :  ] noreverse nowriteback
 set locale "en_GB.UTF-8"
-emin=137.81399841
+emin=62.51417389
 emin_mattoni=250.24003131
 emin_vasp=0.52085173E+02
 plot 'cell_energy_expansion_gulp.txt'     u 0:(($2+emin)/(2*2*2*12)) w p pt 6 lc rgb 'red' title 'MYP potential GULP new',\
