@@ -1095,7 +1095,7 @@ program perovskites_CIFFiles2Lammps
   GULPFilename=adjustl(GULPfilename)
   !adjustl(
   open(u,file=GULPFilename)
-  write(u,'(a)')'single conv'
+  write(u,'(a)')'single conv molecule'
   write(u,'(A)')'cell'
   write(u,'(6(f9.5,1x))') (cell_0(j) , j=1,6)
   write(u,'(A)')'frac'

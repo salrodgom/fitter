@@ -6,13 +6,13 @@ set xlabel "Configuration / -"
 set ylabel "Energy/Atom [eV]" 
 set yrange [ 0.0 :  ] noreverse nowriteback
 set locale "en_GB.UTF-8"
-emin=62.51417389
-emin_mattoni=250.24003131
+emin=59.10277120
+emin_mattoni=2569.83209201
 emin_vasp=0.52085173E+02
 plot 'cell_energy_expansion_gulp.txt'     u 0:(($2+emin)/(2*2*2*12)) w p pt 6 lc rgb 'red' title 'MYP potential GULP new',\
      'cell_energy_expansion_gulp.txt'     u 0:(($2+emin)/(2*2*2*12)) s cs lc rgb 'red' notitle,\
-     '../fit_GULP_PbI_1/cell_energy_expansion_gulp.txt' u 0:(($2+emin_mattoni)/(2*2*2*12)) w p pt 6 lc rgb 'green' title 'MYP potential GULP Mattonni',\
-     '../fit_GULP_PbI_1/cell_energy_expansion_gulp.txt' u 0:(($2+emin_mattoni)/(2*2*2*12)) s cs lc rgb 'green' notitle,\
+     'cell_energy_expansion_gulp_ini.txt' u 0:(($2+emin_mattoni)/(2*2*2*12)) w p pt 6 lc rgb 'green' title 'MYP potential GULP Mattonni',\
+     'cell_energy_expansion_gulp_ini.txt' u 0:(($2+emin_mattoni)/(2*2*2*12)) s cs lc rgb 'green' notitle,\
      'cell_energy_expansion_gulp.txt' u 0:(($1+emin_vasp)/12.0) w p lc rgb 'black' title 'DFT Own',\
      'cell_energy_expansion_gulp.txt' u 0:(($1+emin_vasp)/12.0) s cs lc rgb 'black' notitle
 #    EOF
