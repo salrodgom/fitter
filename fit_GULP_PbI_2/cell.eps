@@ -1,7 +1,7 @@
 %!PS-Adobe-2.0 EPSF-2.0
 %%Title: cell.eps
-%%Creator: gnuplot 5.0 patchlevel 5
-%%CreationDate: Tue Jun 12 14:13:15 2018
+%%Creator: gnuplot 5.0 patchlevel rc2
+%%CreationDate: Wed Jun 13 20:25:06 2018
 %%DocumentFonts: (atend)
 %%BoundingBox: 50 50 410 302
 %%EndComments
@@ -48,7 +48,7 @@ gnudict begin
   } if
 } def
 %
-% Gnuplot Prolog Version 5.1 (Oct 2015)
+% Gnuplot Prolog Version 5.0 (Apr 2014)
 %
 %/SuppressPDFMark true def
 %
@@ -83,7 +83,7 @@ gnudict begin
 /PL {stroke userlinewidth setlinewidth
 	Rounded {1 setlinejoin 1 setlinecap} if} def
 3.8 setmiterlimit
-% Classic Line colors (version 5.0)
+% Default Line colors
 /LCw {1 1 1} def
 /LCb {0 0 0} def
 /LCa {0 0 0} def
@@ -96,20 +96,19 @@ gnudict begin
 /LC6 {0 0 0} def
 /LC7 {1 0.3 0} def
 /LC8 {0.5 0.5 0.5} def
-% Default dash patterns (version 5.0)
-/LTB {BL [] LCb DL} def
+% Default Line Types
 /LTw {PL [] 1 setgray} def
-/LTb {PL [] LCb DL} def
+/LTb {BL [] LCb DL} def
 /LTa {AL [1 udl mul 2 udl mul] 0 setdash LCa setrgbcolor} def
 /LT0 {PL [] LC0 DL} def
-/LT1 {PL [2 dl1 3 dl2] LC1 DL} def
-/LT2 {PL [1 dl1 1.5 dl2] LC2 DL} def
-/LT3 {PL [6 dl1 2 dl2 1 dl1 2 dl2] LC3 DL} def
-/LT4 {PL [1 dl1 2 dl2 6 dl1 2 dl2 1 dl1 2 dl2] LC4 DL} def
-/LT5 {PL [4 dl1 2 dl2] LC5 DL} def
-/LT6 {PL [1.5 dl1 1.5 dl2 1.5 dl1 1.5 dl2 1.5 dl1 6 dl2] LC6 DL} def
-/LT7 {PL [3 dl1 3 dl2 1 dl1 3 dl2] LC7 DL} def
-/LT8 {PL [2 dl1 2 dl2 2 dl1 6 dl2] LC8 DL} def
+/LT1 {PL [4 dl1 2 dl2] LC1 DL} def
+/LT2 {PL [2 dl1 3 dl2] LC2 DL} def
+/LT3 {PL [1 dl1 1.5 dl2] LC3 DL} def
+/LT4 {PL [6 dl1 2 dl2 1 dl1 2 dl2] LC4 DL} def
+/LT5 {PL [3 dl1 3 dl2 1 dl1 3 dl2] LC5 DL} def
+/LT6 {PL [2 dl1 2 dl2 2 dl1 6 dl2] LC6 DL} def
+/LT7 {PL [1 dl1 2 dl2 6 dl1 2 dl2 1 dl1 2 dl2] LC7 DL} def
+/LT8 {PL [2 dl1 2 dl2 2 dl1 2 dl2 2 dl1 2 dl2 2 dl1 4 dl2] LC8 DL} def
 /SL {[] 0 setdash} def
 /Pnt {stroke [] 0 setdash gsave 1 setlinecap M 0 0 V stroke grestore} def
 /Dia {stroke [] 0 setdash 2 copy vpt add M
@@ -525,13 +524,15 @@ systemdict /pdfmark known not {
 SDict begin [
   /Title (cell.eps)
   /Subject (gnuplot plot)
-  /Creator (gnuplot 5.0 patchlevel 5)
+  /Creator (gnuplot 5.0 patchlevel rc2)
+  /Author (salvador)
 %  /Producer (gnuplot)
 %  /Keywords ()
-  /CreationDate (Tue Jun 12 14:13:15 2018)
+  /CreationDate (Wed Jun 13 20:25:06 2018)
   /DOCINFO pdfmark
 end
 } ifelse
+end
 %
 % Support for boxed text - Ethan A Merritt May 2005
 %
@@ -557,10 +558,6 @@ end
 /Boxing false def
 /textshow { ExtendTextBox Gshow } def
 %
-% redundant definitions for compatibility with prologue.ps older than 5.0.2
-/LTB {BL [] LCb DL} def
-/LTb {PL [] LCb DL} def
-end
 %%EndProlog
 %%Page: 1 1
 gnudict begin
@@ -575,145 +572,167 @@ BackgroundColor 0 lt 3 1 roll 0 lt exch 0 lt or or not {BackgroundColor C 1.000 
 1.000 UL
 LTb
 LCb setrgbcolor
-1032 768 M
+1320 768 M
 63 0 V
-5672 0 R
+5384 0 R
 -63 0 V
 stroke
-888 768 M
+1176 768 M
 [ [(Helvetica) 240.0 0.0 true true 0 ( 0)]
 ] -80.0 MRshow
 1.000 UL
 LTb
 LCb setrgbcolor
-1032 1432 M
+1320 1337 M
 63 0 V
-5672 0 R
+5384 0 R
 -63 0 V
 stroke
-888 1432 M
-[ [(Helvetica) 240.0 0.0 true true 0 ( 10)]
+1176 1337 M
+[ [(Helvetica) 240.0 0.0 true true 0 ( 0.02)]
 ] -80.0 MRshow
 1.000 UL
 LTb
 LCb setrgbcolor
-1032 2096 M
+1320 1906 M
 63 0 V
-5672 0 R
+5384 0 R
 -63 0 V
 stroke
-888 2096 M
-[ [(Helvetica) 240.0 0.0 true true 0 ( 20)]
+1176 1906 M
+[ [(Helvetica) 240.0 0.0 true true 0 ( 0.04)]
 ] -80.0 MRshow
 1.000 UL
 LTb
 LCb setrgbcolor
-1032 2760 M
+1320 2475 M
 63 0 V
-5672 0 R
+5384 0 R
 -63 0 V
 stroke
-888 2760 M
-[ [(Helvetica) 240.0 0.0 true true 0 ( 30)]
+1176 2475 M
+[ [(Helvetica) 240.0 0.0 true true 0 ( 0.06)]
 ] -80.0 MRshow
 1.000 UL
 LTb
 LCb setrgbcolor
-1032 3423 M
+1320 3044 M
 63 0 V
-5672 0 R
+5384 0 R
 -63 0 V
 stroke
-888 3423 M
-[ [(Helvetica) 240.0 0.0 true true 0 ( 40)]
+1176 3044 M
+[ [(Helvetica) 240.0 0.0 true true 0 ( 0.08)]
 ] -80.0 MRshow
 1.000 UL
 LTb
 LCb setrgbcolor
-1032 4087 M
+1320 3613 M
 63 0 V
-5672 0 R
+5384 0 R
 -63 0 V
 stroke
-888 4087 M
-[ [(Helvetica) 240.0 0.0 true true 0 ( 50)]
+1176 3613 M
+[ [(Helvetica) 240.0 0.0 true true 0 ( 0.1)]
 ] -80.0 MRshow
 1.000 UL
 LTb
 LCb setrgbcolor
-1032 4751 M
+1320 4182 M
 63 0 V
-5672 0 R
+5384 0 R
 -63 0 V
 stroke
-888 4751 M
-[ [(Helvetica) 240.0 0.0 true true 0 ( 60)]
+1176 4182 M
+[ [(Helvetica) 240.0 0.0 true true 0 ( 0.12)]
 ] -80.0 MRshow
 1.000 UL
 LTb
 LCb setrgbcolor
-1032 768 M
+1320 4751 M
+63 0 V
+5384 0 R
+-63 0 V
+stroke
+1176 4751 M
+[ [(Helvetica) 240.0 0.0 true true 0 ( 0.14)]
+] -80.0 MRshow
+1.000 UL
+LTb
+LCb setrgbcolor
+1320 768 M
 0 63 V
 0 3920 R
 0 -63 V
 stroke
-1032 528 M
+1320 528 M
 [ [(Helvetica) 240.0 0.0 true true 0 ( 0)]
 ] -80.0 MCshow
 1.000 UL
 LTb
 LCb setrgbcolor
-1988 768 M
+2098 768 M
 0 63 V
 0 3920 R
 0 -63 V
 stroke
-1988 528 M
+2098 528 M
 [ [(Helvetica) 240.0 0.0 true true 0 ( 5)]
 ] -80.0 MCshow
 1.000 UL
 LTb
 LCb setrgbcolor
-2944 768 M
+2876 768 M
 0 63 V
 0 3920 R
 0 -63 V
 stroke
-2944 528 M
+2876 528 M
 [ [(Helvetica) 240.0 0.0 true true 0 ( 10)]
 ] -80.0 MCshow
 1.000 UL
 LTb
 LCb setrgbcolor
-3900 768 M
+3654 768 M
 0 63 V
 0 3920 R
 0 -63 V
 stroke
-3900 528 M
+3654 528 M
 [ [(Helvetica) 240.0 0.0 true true 0 ( 15)]
 ] -80.0 MCshow
 1.000 UL
 LTb
 LCb setrgbcolor
-4855 768 M
+4433 768 M
 0 63 V
 0 3920 R
 0 -63 V
 stroke
-4855 528 M
+4433 528 M
 [ [(Helvetica) 240.0 0.0 true true 0 ( 20)]
 ] -80.0 MCshow
 1.000 UL
 LTb
 LCb setrgbcolor
-5811 768 M
+5211 768 M
 0 63 V
 0 3920 R
 0 -63 V
 stroke
-5811 528 M
+5211 528 M
 [ [(Helvetica) 240.0 0.0 true true 0 ( 25)]
+] -80.0 MCshow
+1.000 UL
+LTb
+LCb setrgbcolor
+5989 768 M
+0 63 V
+0 3920 R
+0 -63 V
+stroke
+5989 528 M
+[ [(Helvetica) 240.0 0.0 true true 0 ( 30)]
 ] -80.0 MCshow
 1.000 UL
 LTb
@@ -724,19 +743,19 @@ LCb setrgbcolor
 0 -63 V
 stroke
 6767 528 M
-[ [(Helvetica) 240.0 0.0 true true 0 ( 30)]
+[ [(Helvetica) 240.0 0.0 true true 0 ( 35)]
 ] -80.0 MCshow
 1.000 UL
 LTb
 LCb setrgbcolor
 1.000 UL
-LTB
+LTb
 LCb setrgbcolor
-1032 4751 N
+1320 4751 N
 0 -3983 V
-5735 0 V
+5447 0 V
 0 3983 V
--5735 0 V
+-5447 0 V
 Z stroke
 1.000 UP
 1.000 UL
@@ -750,7 +769,7 @@ currentpoint gsave translate -270 rotate 0 0 moveto
 grestore
 LTb
 LCb setrgbcolor
-3899 168 M
+4043 168 M
 [ [(Helvetica) 240.0 0.0 true true 0 (Configuration / -)]
 ] -80.0 MCshow
 LTb
@@ -765,140 +784,140 @@ LTb
 1.000 UP
 1.000 UL
 LTb
-1.00 0.00 0.00 C 1032 770 Circle
-1223 770 Circle
-1414 771 Circle
-1606 770 Circle
-1797 770 Circle
-1988 771 Circle
-2179 770 Circle
-2370 771 Circle
-2561 770 Circle
-2753 770 Circle
-2944 770 Circle
-3135 769 Circle
-3326 770 Circle
-3517 772 Circle
-3708 770 Circle
-3900 772 Circle
-4091 770 Circle
-4282 770 Circle
-4473 770 Circle
-4664 770 Circle
-4855 771 Circle
-5047 771 Circle
-5238 772 Circle
-5429 769 Circle
-5620 771 Circle
-5811 770 Circle
-6002 771 Circle
-6194 771 Circle
-6385 771 Circle
-6576 768 Circle
-6767 768 Circle
+1.00 0.00 0.00 C 1320 1817 Circle
+1476 1797 Circle
+1631 1840 Circle
+1787 1815 Circle
+1943 1751 Circle
+2098 1903 Circle
+2254 1677 Circle
+2409 2013 Circle
+2565 1561 Circle
+2721 1810 Circle
+2876 1791 Circle
+3032 1337 Circle
+3188 1825 Circle
+3343 2379 Circle
+3499 1809 Circle
+3654 2495 Circle
+3810 1787 Circle
+3966 1789 Circle
+4121 1823 Circle
+4277 1818 Circle
+4433 1873 Circle
+4588 1840 Circle
+4744 2605 Circle
+4899 1107 Circle
+5055 1874 Circle
+5211 1834 Circle
+5366 1922 Circle
+5522 1908 Circle
+5678 1950 Circle
+5833 897 Circle
+5989 768 Circle
 6159 4568 Circle
 % End plot #1
 % Begin plot #2
 1.000 UL
 LTb
-1.00 0.00 0.00 C 1032 770 M
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 1 V
-57 0 V
-58 -1 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 1 V
-58 0 V
-58 0 V
-58 -1 V
-58 0 V
-58 0 V
-58 0 V
-57 1 V
-58 0 V
-58 0 V
-58 -1 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 1 V
-58 0 V
-58 -1 V
-58 0 V
-58 0 V
-57 -1 V
-58 0 V
-58 1 V
-58 0 V
-58 1 V
-58 0 V
-58 1 V
-58 0 V
-58 -1 V
-58 0 V
-58 -1 V
-58 1 V
-58 0 V
-58 1 V
-57 0 V
-58 0 V
-58 -1 V
-58 -1 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-57 1 V
-58 0 V
-58 0 V
-58 -1 V
-58 0 V
-58 0 V
-58 1 V
-58 1 V
-58 0 V
-58 0 V
-58 -1 V
-58 -1 V
-58 -1 V
-58 0 V
-57 1 V
-58 0 V
-58 1 V
-58 0 V
-58 0 V
-58 -1 V
-58 1 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-57 0 V
-58 -1 V
-58 0 V
-58 -1 V
-58 -1 V
-34 0 V
+1.00 0.00 0.00 C 1320 1817 M
+47 -12 V
+47 -8 V
+47 -1 V
+48 7 V
+47 14 V
+47 16 V
+47 11 V
+47 3 V
+47 -10 V
+48 -25 V
+47 -38 V
+47 -31 V
+47 1 V
+47 51 V
+47 71 V
+48 42 V
+47 -35 V
+47 -98 V
+47 -88 V
+47 1 V
+47 114 V
+48 143 V
+47 69 V
+47 -81 V
+47 -173 V
+47 -161 V
+47 -52 V
+47 65 V
+48 118 V
+47 107 V
+47 53 V
+47 -13 V
+47 -86 V
+47 -155 V
+48 -169 V
+47 -116 V
+47 0 V
+47 119 V
+47 205 V
+47 257 V
+48 257 V
+47 174 V
+47 7 V
+47 -187 V
+47 -243 V
+47 -133 V
+48 116 V
+47 276 V
+47 245 V
+47 30 V
+47 -203 V
+47 -291 V
+47 -226 V
+48 -71 V
+47 33 V
+47 67 V
+47 42 V
+47 11 V
+47 -8 V
+48 -15 V
+47 -11 V
+47 2 V
+47 25 V
+47 41 V
+47 26 V
+48 -23 V
+47 -84 V
+47 -64 V
+47 58 V
+47 265 V
+47 358 V
+48 224 V
+47 -133 V
+47 -495 V
+47 -570 V
+47 -341 V
+47 74 V
+47 321 V
+48 338 V
+47 153 V
+47 -21 V
+47 -87 V
+47 -48 V
+47 23 V
+48 50 V
+47 30 V
+47 -11 V
+47 -20 V
+47 11 V
+47 67 V
+48 63 V
+47 -28 V
+47 -200 V
+47 -341 V
+47 -364 V
+47 -267 V
+28 -66 V
 % End plot #2
 % Begin plot #3
 1.000 UP
@@ -911,142 +930,144 @@ LTb
 1.000 UP
 1.000 UL
 LTb
-0.00 1.00 0.00 C 1032 4326 Circle
-1223 4332 Circle
-1414 4325 Circle
-1606 4326 Circle
-1797 4330 Circle
-1988 4325 Circle
-2179 4332 Circle
-2370 4323 Circle
-2561 4335 Circle
-2753 4327 Circle
-2944 4327 Circle
-3135 4330 Circle
-3326 4328 Circle
-3517 4322 Circle
-3708 4327 Circle
-3900 4322 Circle
-4091 4328 Circle
-4282 4328 Circle
-4473 4328 Circle
-4664 4328 Circle
-4855 4328 Circle
-5047 4328 Circle
-5238 4330 Circle
-5429 4351 Circle
-5620 4329 Circle
-5811 4328 Circle
-6002 4329 Circle
-6194 4329 Circle
-6385 4329 Circle
-6576 4363 Circle
-6767 4380 Circle
+0.00 1.00 0.00 C 1320 804 Circle
+1476 798 Circle
+1631 817 Circle
+1787 812 Circle
+1943 782 Circle
+2098 847 Circle
+2254 768 Circle
+2409 876 Circle
+2565 846 Circle
+2721 1086 Circle
+2876 1035 Circle
+3032 1110 Circle
+3188 1183 Circle
+3343 1429 Circle
+3499 1573 Circle
+3654 1473 Circle
+3810 1983 Circle
+3966 1473 Circle
+4121 1433 Circle
+4277 1505 Circle
+4433 1627 Circle
+4588 1379 Circle
+4744 1436 Circle
+4899 2390 Circle
+5055 1751 Circle
+5211 1630 Circle
+5366 1632 Circle
+5522 1816 Circle
+5678 1782 Circle
+5833 1865 Circle
+5989 2704 Circle
+6144 4245 Circle
 6159 4328 Circle
 % End plot #3
 % Begin plot #4
 1.000 UL
 LTb
-0.00 1.00 0.00 C 1032 4326 M
-58 3 V
-58 2 V
-58 1 V
-58 -1 V
-58 -2 V
-58 -3 V
-58 -1 V
-57 -1 V
-58 1 V
-58 1 V
-58 2 V
-58 1 V
-58 1 V
-58 -2 V
-58 -2 V
-58 -1 V
-58 1 V
-58 3 V
-58 3 V
-58 0 V
-58 -3 V
-57 -4 V
-58 -2 V
-58 2 V
-58 5 V
-58 4 V
-58 1 V
-58 -3 V
-58 -3 V
-58 -3 V
-58 0 V
-58 0 V
-58 1 V
-58 1 V
-58 1 V
-57 1 V
-58 0 V
-58 0 V
-58 -1 V
-58 -2 V
-58 -2 V
-58 -2 V
-58 -1 V
-58 2 V
-58 2 V
-58 1 V
-58 0 V
-58 -2 V
-58 -2 V
-57 -1 V
-58 2 V
-58 2 V
-58 2 V
-58 1 V
-58 0 V
-58 -1 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-57 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 -1 V
-58 -1 V
-58 2 V
-58 5 V
-58 8 V
-58 7 V
-58 3 V
-58 -4 V
-57 -9 V
-58 -8 V
-58 -4 V
-58 0 V
-58 1 V
-58 2 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 1 V
-58 -1 V
-58 -2 V
-58 -1 V
-57 2 V
-58 6 V
-58 10 V
-58 11 V
-58 10 V
-58 7 V
-58 5 V
-58 3 V
+0.00 1.00 0.00 C 1320 804 M
+49 -4 V
+48 -2 V
+49 0 V
+49 4 V
+49 6 V
+48 6 V
+49 6 V
+49 2 V
+49 -4 V
+48 -12 V
+49 -17 V
+49 -11 V
+49 8 V
+48 26 V
+49 28 V
+49 7 V
+48 -25 V
+49 -36 V
+48 -18 V
+2 0 R
+48 21 V
+48 44 V
+49 38 V
+49 1 V
+49 -25 V
+48 -13 V
+49 36 V
+49 83 V
+49 89 V
+48 51 V
+49 -4 V
+49 -32 V
+48 -23 V
+49 9 V
+49 31 V
+49 32 V
+48 21 V
+49 16 V
+49 27 V
+49 51 V
+48 75 V
+49 87 V
+49 89 V
+48 74 V
+49 36 V
+49 -23 V
+49 -71 V
+48 -50 V
+49 46 V
+49 175 V
+49 206 V
+48 116 V
+49 -68 V
+49 -191 V
+49 -204 V
+48 -114 V
+49 -18 V
+49 30 V
+48 31 V
+49 18 V
+49 18 V
+49 37 V
+48 54 V
+49 44 V
+49 7 V
+49 -49 V
+48 -87 V
+49 -103 V
+49 -91 V
+49 -24 V
+48 108 V
+49 288 V
+49 373 V
+48 291 V
+49 47 V
+49 -192 V
+49 -280 V
+48 -215 V
+49 -80 V
+49 1 V
+49 20 V
+48 -3 V
+49 -9 V
+49 11 V
+49 50 V
+48 68 V
+49 58 V
+49 23 V
+48 -9 V
+49 -26 V
+49 -27 V
+49 -6 V
+48 42 V
+49 116 V
+49 202 V
+49 289 V
+48 371 V
+49 446 V
+49 496 V
+48 521 V
 % End plot #4
 % Begin plot #5
 1.000 UP
@@ -1059,155 +1080,155 @@ LTb
 1.000 UP
 1.000 UL
 LTb
-0.00 0.00 0.00 C 1032 768 BoxF
-1223 768 BoxF
-1414 768 BoxF
-1606 768 BoxF
-1797 768 BoxF
-1988 768 BoxF
-2179 768 BoxF
-2370 768 BoxF
-2561 768 BoxF
-2753 768 BoxF
-2944 768 BoxF
-3135 769 BoxF
-3326 769 BoxF
-3517 769 BoxF
-3708 769 BoxF
-3900 769 BoxF
-4091 769 BoxF
-4282 769 BoxF
-4473 769 BoxF
-4664 770 BoxF
-4855 770 BoxF
-5047 770 BoxF
-5238 770 BoxF
-5429 770 BoxF
-5620 770 BoxF
-5811 770 BoxF
-6002 770 BoxF
-6194 771 BoxF
-6385 771 BoxF
-6576 771 BoxF
-6767 774 BoxF
+0.00 0.00 0.00 C 1320 768 BoxF
+1476 769 BoxF
+1631 769 BoxF
+1787 773 BoxF
+1943 775 BoxF
+2098 781 BoxF
+2254 792 BoxF
+2409 815 BoxF
+2565 852 BoxF
+2721 863 BoxF
+2876 936 BoxF
+3032 1087 BoxF
+3188 1107 BoxF
+3343 1161 BoxF
+3499 1249 BoxF
+3654 1335 BoxF
+3810 1358 BoxF
+3966 1398 BoxF
+4121 1400 BoxF
+4277 1420 BoxF
+4433 1458 BoxF
+4588 1463 BoxF
+4744 1506 BoxF
+4899 1524 BoxF
+5055 1537 BoxF
+5211 1616 BoxF
+5366 1784 BoxF
+5522 1892 BoxF
+5678 1999 BoxF
+5833 2191 BoxF
+5989 3152 BoxF
 6159 4088 BoxF
 % End plot #5
 % Begin plot #6
 1.000 UL
 LTb
-0.00 0.00 0.00 C 1032 768 M
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-57 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-57 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 1 V
-58 0 V
-57 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-57 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 1 V
-58 0 V
-57 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-57 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 1 V
-58 0 V
-58 0 V
-58 0 V
-57 0 V
-58 0 V
-58 0 V
-58 0 V
-58 0 V
-58 1 V
-58 1 V
-58 1 V
+0.00 0.00 0.00 C 1320 768 M
+47 0 V
+47 1 V
+47 0 V
+48 0 V
+47 0 V
+47 0 V
+47 0 V
+47 1 V
+47 2 V
+48 1 V
+47 0 V
+47 1 V
+47 0 V
+47 2 V
+47 1 V
+48 2 V
+47 3 V
+47 3 V
+47 4 V
+47 4 V
+47 5 V
+48 6 V
+47 10 V
+47 12 V
+47 12 V
+47 11 V
+47 6 V
+47 2 V
+48 3 V
+47 5 V
+47 13 V
+47 23 V
+47 35 V
+47 48 V
+48 51 V
+47 42 V
+47 23 V
+47 6 V
+47 0 V
+47 3 V
+48 12 V
+47 19 V
+47 23 V
+47 25 V
+47 27 V
+47 28 V
+48 31 V
+47 29 V
+47 24 V
+47 15 V
+47 7 V
+47 4 V
+47 7 V
+48 13 V
+47 13 V
+47 11 V
+47 5 V
+47 0 V
+47 -2 V
+48 1 V
+47 4 V
+47 8 V
+47 11 V
+47 13 V
+47 13 V
+48 8 V
+47 2 V
+47 -1 V
+47 2 V
+47 8 V
+47 14 V
+48 15 V
+47 12 V
+47 8 V
+47 4 V
+47 2 V
+47 2 V
+47 3 V
+48 6 V
+47 12 V
+47 19 V
+47 30 V
+47 43 V
+47 52 V
+48 54 V
+47 47 V
+47 36 V
+47 30 V
+47 31 V
+47 36 V
+48 36 V
+47 30 V
+47 17 V
+47 22 V
+47 67 V
+47 149 V
+48 246 V
+47 313 V
+47 347 V
 % End plot #6
 stroke
 2.000 UL
 LTb
 LCb setrgbcolor
 1.000 UL
-LTB
+LTb
 LCb setrgbcolor
-1032 4751 N
+1320 4751 N
 0 -3983 V
-5735 0 V
+5447 0 V
 0 3983 V
--5735 0 V
+-5447 0 V
 Z stroke
 1.000 UP
 1.000 UL
