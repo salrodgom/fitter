@@ -1,7 +1,7 @@
 install:
 	gfortran fitter.f90 -o fitter
 all:
-	gfortran fitter.f90 -o fitter
+	gfortran fitter.f90 -o fitter -fbounds-check
 	cp lib/peros.lib.original peros.lib ; ./fitter < input
 clean:
 	rm -rf fitter *.o *.mod

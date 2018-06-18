@@ -13,7 +13,7 @@
 *  conjugate    - use conjugate gradients minimiser                            *
 ********************************************************************************
 
-  Job Started  at 18:19.44 13th June       2018                               
+  Job Started  at 21:49.41 18th June       2018                               
 
   Number of CPUs =     4
 
@@ -284,7 +284,7 @@ H2   c N1   c Harmonic       32.0      1.03      0.00      0.00     0.000 1 Bond
 Atom  Types   Potential         A         B         C         D     Cutoffs(Ang)
   1     2                                                            Min    Max 
 --------------------------------------------------------------------------------
-Pb   c Pb   c Buckingham    0.305E+07 0.131     0.113E-23  0.00     0.000 12.000
+Pb   c Pb   c Buckingham    0.305E+07 0.131      0.00      0.00     0.000 12.000
 I    c Pb   c Buckingham    0.449E+04 0.322      0.00      0.00     0.000 12.000
 I    c I    c Buckingham     988.     0.482      30.2      0.00     0.000 12.000
 C1   c Pb   c Buckingham    0.142E+07 0.151      0.00      0.00     0.000 12.000
@@ -348,19 +348,18 @@ H1    c C1    c N1    c H2    c  0.3374E-02 +   3     0.00  Bonded
 --------------------------------------------------------------------------------
   Task / Subroutine                                          Time (Seconds)
 --------------------------------------------------------------------------------
-  Calculation of reciprocal space energy and derivatives          0.0007
-  Calculation of real space energy and derivatives                0.0175
+  Calculation of reciprocal space energy and derivatives          0.0015
+  Calculation of real space energy and derivatives                0.0448
   Calculation of three-body energy and derivatives                0.0003
-  Calculation of four-body energy and derivatives                 0.0001
-  Calculation of molecules and connectivity                       0.0015
-  Global summation overhead                                       0.0016
+  Calculation of four-body energy and derivatives                 0.0002
+  Calculation of molecules and connectivity                       0.0028
 --------------------------------------------------------------------------------
-  Total CPU time                                                  0.0287
+  Total CPU time                                                  0.0620
 --------------------------------------------------------------------------------
 
 
   CIF file written as test.cif                                                
 
 
-  Job Finished at 18:19.44 13th June       2018                               
+  Job Finished at 21:49.41 18th June       2018                               
 

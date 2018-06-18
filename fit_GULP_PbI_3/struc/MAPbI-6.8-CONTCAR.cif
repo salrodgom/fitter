@@ -1,0 +1,39 @@
+data_MAPbI_6.8-CONTCAR
+
+_audit_creation_method RASPA-1.0
+_audit_creation_date 2018-1-9
+_audit_author_name 'Jose Manuel Vicent-Luna'
+
+_cell_length_a    6.8000
+_cell_length_b    6.8000
+_cell_length_c    6.8000
+_cell_angle_alpha 90.0000
+_cell_angle_beta  90.0000
+_cell_angle_gamma 90.0000
+
+_symmetry_cell_setting          triclinic
+_symmetry_space_group_name_Hall 'P 1'
+_symmetry_space_group_name_H-M  'P 1'
+_symmetry_Int_Tables_number     1
+
+_symmetry_equiv_pos_as_xyz 'x,y,z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_charge
+C1       C1      0.96608  -0.00014   0.00623     0.7710
+N1       N1      0.18186   0.00042   0.03639    -1.1000
+H1       H       0.93579   0.00035   0.84755     0.0230
+H1       H       0.90400   0.13215   0.07542     0.0230
+H1       H       0.90480   0.86673   0.07443     0.0230
+H2       H       0.24577   0.12749   0.97802     0.5400
+H2       H       0.24707   0.87733   0.97183     0.5400
+H2       H       0.21919   0.99647   0.18658     0.5400
+Pb       Pb      0.37714   0.52492   0.50288     2.0300
+I        I       0.37423   0.49939  -0.04671    -1.1300
+I        I       0.38045  -0.02269   0.51765    -1.1300
+I        I      -0.05313   0.49692   0.44685    -1.1300

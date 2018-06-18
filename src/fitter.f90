@@ -523,7 +523,7 @@ module fitter_globals
  implicit none
  integer                    :: npar,i,seed = 0
  integer,allocatable        :: np(:)
- integer                    :: err_apertura,ii,intervalos,j
+ integer                    :: err_apertura,ii,intervalos,j,n_refits
  !integer,parameter          :: integration_points = 10000
  !real,parameter             :: precision_Newton = 1e-5
  !real                       :: tol = 0.001, tolfire = 0.25
@@ -566,7 +566,6 @@ module fitter_globals
     npar=npar+np(1)
     allocate(ajuste(1:2,1:npar))
     allocate(param(1,0:npar-1))
-    allocate(string_IEEE(1))
     np(1) = npar
     param(1,:) = 0.0
     do i=1,npar
@@ -585,14 +584,19 @@ module fitter_globals
     write(6,*)'[WARN] Refitting parameters'
     read(line,*)inpt,refit_flag
     if(refit_flag)then
-     do j=1,npar
-      read(5,'(a32)')chain(1:32)
-      write(6,'(a32)')chain(1:32)
-      string_IEEE(1)(32*(j-1)+1:32*j)=chain(1:32)
+     read(5,*) n_refits
+     allocate(string_IEEE(n_refits))
+     do i=1,n_refits
+      do j=1,npar
+       read(5,'(a32)') chain(1:32)
+       write(6,'(a32)')chain(1:32)
+       string_IEEE(i)(32*(j-1)+1:32*j)=chain(1:32)
+      end do
+      write(6,'(a)')string_IEEE(i)(1:32*npar)
      end do
-     write(6,'(a)')string_IEEE(1)(1:32*npar)
     else
-     string_IEEE(1) = ' '
+     allocate(string_IEEE(1))
+     string_IEEE(i) = ' '
     end if
    end if
    if(line(1:5)=='RSeed') then
@@ -628,9 +632,9 @@ module mod_genetic
  use get_structures
  use GeometricProperties
  implicit none
- private
+ !private
  public fit
- integer,parameter             :: ga_size         = 10 !32 !2**10 ! numero de cromosomas
+ integer,parameter             :: ga_size         = 130 !2**10 ! numero de cromosomas
  real,parameter                :: ga_mutationrate = 0.3333 !2000/real(ga_size) ! ga_mutationrate=0.333
  real,parameter                :: ga_eliterate= 0.25, GA_DisasterRate = 0.0000001
  integer,parameter             :: ga_elitists = int( ga_size * ga_eliterate)                   
@@ -708,6 +712,7 @@ module mod_genetic
   character(len=200)  :: line
   logical             :: flagzero = .false.
   real                :: infinite = 3.4028e38
+  !write(6,'(a)')'Generating GULP input'
   call system("cp peros_input.lib peros.lib")
   penalty=0.0
   fitness = 0.0
@@ -719,7 +724,7 @@ module mod_genetic
     !write(6,*) funk,phenotype(i)
     select case(funk)
      case("A_buck")
-      if (phenotype(i)<=1e-2.or.isnan(phenotype(i)).or.phenotype(i)>=1e15)then
+      if (phenotype(i)<=1e-2.or.isnan(phenotype(i)).or.phenotype(i)>=1e10)then
        penalty=infinite
        exit refer
       end if
@@ -756,6 +761,7 @@ module mod_genetic
     end select
    end if phys_constrains
    write(line,*)"sed -i 's/",trim(ajuste(1,i)(1:Clen_trim(ajuste(1,i)))),"/",phenotype(i),"/g' peros.lib"
+   !write(6,'(a)') line
    call system(line)
   end do refer
   calgulp: if ( penalty < 1.0 ) then
@@ -768,12 +774,15 @@ module mod_genetic
     call output_gulp(u,CIFFiles(i),filename(i))
     write(line,*)"~/bin/gulp < ",filename(i)(1:Clen_trim(filename(i)))," > ",&
      filename(i)(1:Clen_trim(filename(i))),".gout "
+   ! write(6,'(a)')line
     call system(line)
     write(line,*)"grep 'Total lattice energy       =' ",filename(i)(1:Clen_trim(filename(i))),&
      ".gout | grep 'eV' | awk '{print $5}' > ",filename(i)(1:Clen_trim(filename(i))),".tmp "
+    !write(6,'(a)')line
     call system(line)
     write(line,*)"grep 'ERROR' ",filename(i)(1:Clen_trim(filename(i))),&
      ".gout | wc -l | awk '{print $1}' >> ",filename(i)(1:Clen_trim(filename(i))),".tmp "
+    !write(6,'(a)')line
     call system(line)
     u=get_file_unit(444)
     open(u,file=filename(i)(1:Clen_trim(filename(i)))//".tmp")
@@ -788,8 +797,12 @@ module mod_genetic
      !write(6,*)   CIFFiles(i)%filename,'(',(phenotype(j),j=1,np(compound)),')'
      !write(6,*)   CIFFiles(i)%cal_energy,CIFFiles(i)%obs_energy
     end if
-    read(u,'(a)') j
-    if (j>0) CIFFiles(i)%cal_energy=infinite
+    read(u,*) j
+    if (j>0) then
+     CIFFiles(i)%cal_energy=infinite
+     write(6,*)'There are errors in output', j
+     stop '#'
+    end if
     close(u)
     end if
    if(i.gt.n_files) exit
@@ -799,9 +812,9 @@ module mod_genetic
   cal_energy_min=minval(CIFFiles%cal_energy)
   do i=1,n_files
    fitness = fitness + &
-    abs(CIFFiles(i)%obs_energy-obs_energy_min-(CIFFiles(i)%cal_energy-cal_energy_min))
+    0.5*abs(CIFFiles(i)%obs_energy-obs_energy_min-(CIFFiles(i)%cal_energy-cal_energy_min))**2
   end do
-  fitness=fitness**2/real(2*n_files)
+  !fitness=fitness/real(n_files)
   else
    fitness = fitness + penalty
   end if calgulp
@@ -828,7 +841,7 @@ module mod_genetic
    wnowasteparam(i) = parents(k)%phenotype(i)
   end do
   wfitness = parents(k)%fitness
-  write(6,'(i2,1x,i5,1x,a32,1x,e25.12,1x,f14.7,1x,a,1x,a,i8,a,i8,a,1x,a)')compound,kk,wnowaste(1:32),&
+  write(6,'(i2,1x,i5,1x,a32,1x,e25.12,1x,f14.7,1x,a,1x,a,i8,a,i8,a,1x,a)')k,kk,wnowaste(1:32),&
        wnowasteparam(1),wfitness,'[Fitness]','(',kkk,'/',vgh,')','[Similarity]' !,k
   do i=2,np(compound)
    if(lod>0.and.i==3)then
@@ -1043,38 +1056,60 @@ module mod_genetic
   return
  end subroutine choose_propto_fitness
 
- subroutine Fit(Compound,Seed,n_files,CIFFiles)
+ subroutine fit(Compound,Seed,n_files,CIFFiles)
   implicit none
-  integer,intent(in)       :: Compound, Seed,n_files
+  integer,intent(in)          :: Compound, Seed,n_files
   type(CIFFile),intent(inout) :: CIFFiles(n_files)
-  integer,parameter  :: maxstep = 1000, minstep = 10
-  integer            :: kk, ii, i, k,vgh
-  real               :: diff = 0.0, fit0 = 0.0
-  integer            :: eps 
-  kk = 0
-  ii = 0
-  pop_alpha = [(new_citizen(compound,seed,n_files,CIFFiles), i = 1,ga_size)]
-  parents =>  pop_alpha
-  children => pop_beta
+  integer,parameter           :: maxstep = 15, minstep = 10
+  integer                     :: kk, ii, i, j, k,vgh
+  real                        :: diff = 0.0, fit0 = 0.0
+  integer                     :: eps 
+  write(6,'(a)')'Initialising GA:'
+  write(6,'(i5,1x,a,1x,i5,1x,a,f14.7,1x,a)')ga_size,'(elites:',int(ga_eliterate*ga_size),'mutate:',ga_mutationrate,')'
+  !pop_alpha = [(new_citizen(compound,seed,n_files,CIFFiles), i = 1,ga_size)]
+  !parents =>  pop_alpha
+  !children => pop_beta
+  write(6,'(a)')'[...]'
   if ( refit_flag ) then
-   do i = 1, GA_ELITISTS
-    parents(i)%genotype=string_IEEE(compound)
-    children(i)%genotype=string_IEEE(compound)
-    call UpdateCitizen(parents(i),compound,n_files,CIFFiles)
-    call UpdateCitizen(children(i),compound,n_files,CIFFiles)
+   do i=1,n_refits
+    write(6,'(a,1x,i4)')'Initial input',i
+    pop_alpha(i)%genotype=string_IEEE(i)
+    write(6,'(a)') string_IEEE(i)
+    call UpdateCitizen(pop_alpha(i),compound,n_files,CIFFiles)
+    write(6,'(a)')   pop_alpha(i)%genotype
+    write(6,*)     ( pop_alpha(i)%phenotype(j), j=1,np(compound) )
    end do
-   call Mate(compound,n_files,CIFFiles)
-   call Swap()
+   finish_make: do i=n_refits+1,ga_size
+    if(i>ga_size) exit finish_make
+    write(6,'(a,1x,i4)') 'Initial input',i
+    pop_alpha(i) = new_citizen(compound,seed,n_files,CIFFiles) 
+    call UpdateCitizen(pop_alpha(i),compound,n_files,CIFFiles)
+    write(6,'(a)')   pop_alpha(i)%genotype
+    write(6,*)     ( pop_alpha(i)%phenotype(j), j=1,np(compound) )
+   end do finish_make
+   write(6,'(a)')'[...]'
+   parents =>  pop_alpha
+   children => pop_beta
+   !call Mate(compound,n_files,CIFFiles)
+   !call Swap()
    call SortByFitness()
+  else
+   pop_alpha = [(new_citizen(compound,seed,n_files,CIFFiles), i = 1,ga_size)]
+   parents =>  pop_alpha
+   children => pop_beta
   end if
-  call WriteCitizen(1,ii,1,compound,kk, int(0.5*ga_size*ga_size-ga_size) )
+  ii=0
+  kk=0
   converge: do while ( .true. )
    ii=ii+1
    if ( ii == 1 ) write(6,'(a)') 'Go Down the Rabbit Hole >'
    call SortByFitness()
-   eps = Biodiversity( compound, children)
+   !eps = Biodiversity( compound, children)
+   eps = 0.0
    diff = eps
-   call WriteCitizen(1,ii,eps,compound,kk, int(0.5*ga_size*ga_size-ga_size) )
+   do i=1,ga_size
+    call WriteCitizen(i,ii,eps,compound,kk, int(0.5*ga_size*ga_size-ga_size) )
+   end do
    if( ii>=minstep .and. parents(1)%fitness <= 0.1 .and. abs(parents(1)%fitness-fit0) <= 1e-4)then
     kk = kk + 1
    else
