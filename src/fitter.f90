@@ -634,7 +634,7 @@ module mod_genetic
  implicit none
  !private
  public fit
- integer,parameter             :: ga_size         = 130 !2**10 ! numero de cromosomas
+ integer,parameter             :: ga_size         = 200 !2**10 ! numero de cromosomas
  real,parameter                :: ga_mutationrate = 0.3333 !2000/real(ga_size) ! ga_mutationrate=0.333
  real,parameter                :: ga_eliterate= 0.25, GA_DisasterRate = 0.0000001
  integer,parameter             :: ga_elitists = int( ga_size * ga_eliterate)                   
