@@ -1,3 +1,80 @@
+module mod_random
+! module for pseudo random numbers
+ implicit none
+ private
+ public init_random_seed, randint, r4_uniform
+ contains
+ subroutine init_random_seed( )
+  use iso_fortran_env, only: int64
+  implicit none
+  integer, allocatable :: seed(:)
+  integer              :: i, n, un, istat, dt(8), pid
+  integer(int64)       :: t
+  call random_seed(size = n)
+  allocate(seed(n))
+  write(6,'(a)')"Random seed:"
+  ! First try if the OS provides a random number generator
+  open(newunit=un, file="/dev/urandom", access="stream", &
+       form="unformatted", action="read", status="old", iostat=istat)
+  if (istat == 0) then
+   read(un) seed
+   close(un)
+   write(6,'(a)')"OS provides a random number generator"
+  else
+   ! Fallback to XOR:ing the current time and pid. The PID is
+   ! useful in case one launches multiple instances of the same
+   ! program in parallel.
+   call system_clock(t)
+   if (t == 0) then
+      call date_and_time(values=dt)
+      t = (dt(1) - 1970) * 365_int64 * 24 * 60 * 60 * 1000 &
+           + dt(2) * 31_int64 * 24 * 60 * 60 * 1000 &
+           + dt(3) * 24_int64 * 60 * 60 * 1000 &
+           + dt(5) * 60 * 60 * 1000 &
+           + dt(6) * 60 * 1000 + dt(7) * 1000 &
+           + dt(8)
+   end if
+   pid = getpid()
+   t = ieor(t, int(pid, kind(t)))
+   do i = 1, n
+      seed(i) = lcg(t)
+   end do
+   write(6,'(a)')"Fallback to the current time and pid."
+  end if
+  call random_seed(put=seed)
+  write(6,*) seed
+ contains
+  ! This simple PRNG might not be good enough for real work, but is
+  ! sufficient for seeding a better PRNG.
+  function lcg(s)
+    integer :: lcg
+    integer(int64) :: s
+    if (s == 0) then
+       s = 104729
+    else
+       s = mod(s, 4294967296_int64)
+    end if
+    s = mod(s * 279470273_int64, 4294967291_int64)
+    lcg = int(mod(s, int(huge(0), int64)), kind(0))
+  end function lcg
+ end subroutine init_random_seed
+ integer function randint(i,j)
+  integer,intent(in)    :: i,j
+  real                  :: r
+  call random_number(r)
+  randint = i + floor((j+1-i)*r)
+ end function randint
+! 
+ real function r4_uniform(x,y)
+  implicit none
+  real,intent(in)       :: x,y
+  real                  :: r
+  call random_number(r)
+  r4_uniform=(r*(y-x))+x
+  return
+ end function r4_uniform
+end module mod_random
+
 module types
  implicit none
  integer,parameter   :: max_atom_number = 1000
@@ -22,73 +99,6 @@ module types
   real                         :: fitness
  end type  
 end module types
-!
-module mod_random
-! module for pseudo random numbers
- implicit none
- private
- public init_random_seed, randint, r4_uniform
- contains
- subroutine init_random_seed(seed)
-  implicit none
-  integer, intent(out) :: seed
-! local
-  integer   day,hour,i4_huge,milli,minute,month,second,year
-  parameter (i4_huge=2147483647)
-  double precision temp
-  character*(10) time
-  character*(8) date
-  call date_and_time (date,time)
-  read (date,'(i4,i2,i2)')year,month,day
-  read (time,'(i2,i2,i2,1x,i3)')hour,minute,second,milli
-  temp=0.0D+00
-  temp=temp+dble(month-1)/11.0D+00
-  temp=temp+dble(day-1)/30.0D+00
-  temp=temp+dble(hour)/23.0D+00
-  temp=temp+dble(minute)/59.0D+00
-  temp=temp+dble(second)/59.0D+00
-  temp=temp+dble(milli)/999.0D+00
-  temp=temp/6.0D+00
-  doext: do
-    if(temp<=0.0D+00 )then
-       temp=temp+1.0D+00
-       cycle doext
-    else
-       exit doext
-    end if
-  enddo doext
-  doext2: do
-    if (1.0D+00<temp) then
-       temp=temp-1.0D+00
-       cycle doext2
-    else
-       exit doext2
-    end if
-  end do doext2
-  seed=int(dble(i4_huge)*temp)
-  if(seed == 0)       seed = 1
-  if(seed == i4_huge) seed = seed-1
-  return
- end subroutine init_random_seed
-!
- integer function randint(i,j,seed)
-  integer,intent(in)    :: i,j
-  integer,intent(in)    :: seed
-  real                  :: r
-  CALL RANDOM_NUMBER(r)
-  randint=int(r*(j+1-i))+i
- end function randint
-! 
- real function r4_uniform(x,y,seed)
-  implicit none
-  real,intent(in)       :: x,y 
-  integer,intent(in)    :: seed
-  real                  :: r
-  CALL RANDOM_NUMBER(r)
-  r4_uniform=(r*(y-x))+x
-  return
- end function r4_uniform
-end module
 !
 module GeometricProperties
  implicit none
@@ -274,7 +284,7 @@ module GeometricProperties
   use types
   implicit none
   integer,intent(in)                :: u,n_files
-  type(CIFfile),intent(in   )       :: CIFFiles(n_files)
+  type(CIFfile),intent(inout)       :: CIFFiles(n_files)
   character(len=100)                :: GULPFilename="fit.gin"
   integer                           :: i,j,k
   real               :: mmm,rrr,obs_energy_min
@@ -442,7 +452,7 @@ module get_structures
    implicit none
    integer, intent(in)         :: n_files
    character(len=3),intent(in) :: add
-   type(CIFfile),intent(in)    :: CIFFiles(n_files)
+   type(CIFfile),intent(inout) :: CIFFiles(n_files)
    integer                     :: i,u=123,ierr=0
    real                        :: obs_energy_min,cal_energy_min
    character(len=20)           :: filename = " "
@@ -521,7 +531,7 @@ module fitter_globals
  use mod_random
  use get_structures
  implicit none
- integer                    :: npar,i,seed = 0
+ integer                    :: npar,i
  integer,allocatable        :: np(:)
  integer                    :: err_apertura,ii,intervalos,j,n_refits
  !integer,parameter          :: integration_points = 10000
@@ -599,10 +609,10 @@ module fitter_globals
      string_IEEE(i) = ' '
     end if
    end if
-   if(line(1:5)=='RSeed') then
-    seed_flag=.false.
-    read(line,*)inpt, seed
-   end if
+   !if(line(1:5)=='RSeed') then
+   ! seed_flag=.false.
+   ! read(line,*)inpt, seed
+   !end if
    if(line(1:22)=='physically_constrained') then
     physical_constrains=.true.
     write(6,'(a)') '[WARN] The fits are physically constrained'
@@ -615,7 +625,7 @@ module fitter_globals
   implicit none
   integer                        :: i
   integer,intent(in)             :: n_files
-  type(CIFfile),intent(in)       :: CIFFiles(n_files)
+  type(CIFfile),intent(inout)    :: CIFFiles(n_files)
   do i=1,n_files
    datas(1,1,i)=real(i)
    datas(2,1,i)=CIFFiles(i)%obs_energy
@@ -643,16 +653,16 @@ module mod_genetic
  type(typ_ga), target          :: pop_alpha( ga_size )
  type(typ_ga), target          :: pop_beta( ga_size )
  contains
- type(typ_ga) function new_citizen(compound,seed,n_files,CIFFiles)
+ type(typ_ga) function new_citizen(compound,n_files,CIFFiles)
   implicit none
   integer                     :: i,j,k
-  integer,intent(in)          :: n_files,compound,seed
+  integer,intent(in)          :: n_files,compound
   type(CIFFile),intent(inout) :: CIFFiles(n_files)
   real                        :: infinite = 3.4028e38
   new_citizen%fitness = infinite
   new_citizen%genotype = ' '
   do i = 1,32*np(compound)
-   new_citizen%genotype(i:i) = achar(randint(48,49,seed))
+   new_citizen%genotype(i:i) = achar(randint(48,49))
   end do
   do i = 1,np(compound)
    read(new_citizen%genotype(32*(i-1)+1:32*i),'(b32.32)') new_citizen%phenotype(i)
@@ -893,7 +903,7 @@ module mod_genetic
  integer function Biodiversity( compound, animalito)
   implicit none
   integer,intent(in)             :: Compound
-  type(typ_ga), intent(in)       :: animalito(1:ga_size)
+  type(typ_ga), intent(inout)    :: animalito(1:ga_size)
   integer                        :: suma
   integer                        :: i,j,k,cont
   character(len=20)              :: mode = 'Normal'
@@ -938,8 +948,8 @@ module mod_genetic
   type(typ_ga), intent(inout) :: macrophage
   integer                     :: ipos,compound
   do i = 1,np(compound)
-   ipos = randint(32*(i-1)+1,32*i,seed)
-   macrophage%genotype(ipos:ipos) = achar(randint(48,49,seed))
+   ipos = randint(32*(i-1)+1,32*i)
+   macrophage%genotype(ipos:ipos) = achar(randint(48,49))
   end do
   return
  end subroutine Mutate
@@ -952,7 +962,7 @@ module mod_genetic
   real                    :: rrr
   do i = GA_ELITISTS + 1, GA_Size
    do j=1,32*np(compound)
-    Children%genotype(j:j) = achar(randint(48,49,seed))
+    Children%genotype(j:j) = achar(randint(48,49))
    end do
    call UpdateCitizen(Children(i),Compound,n_files,CIFFiles)
   end do
@@ -990,10 +1000,10 @@ module mod_genetic
    !call choose_propto_fitness(i1,i2)
    !write(6,*)i1,i2
    ! }}
-   spos = randint(0, 32*np(compound), seed )
+   spos = randint(0, 32*np(compound) )
    children(i)%genotype = parents(i1)%genotype(:spos) // parents(i2)%genotype(spos+1:)
    ! Mutate and NuclearDisaster:
-   rrr = r4_uniform(0.0,1.0,seed)
+   rrr = r4_uniform(0.0,1.0)
    if ( rrr < GA_MUTATIONRATE) then
     call Mutate(children(i),compound)
    else if ( rrr >= GA_MutationRate .and. rrr <= GA_MutationRate + GA_DisasterRate ) then
@@ -1009,10 +1019,10 @@ module mod_genetic
  subroutine choose_randomly(j1,j2)
   implicit none
   integer,intent(out) :: j1,j2
-  j1  = randint(1, int(ga_size/2),seed)
-  j2  = randint(1, int(ga_size/2),seed)
+  j1  = randint(1, int(ga_size/2))
+  j2  = randint(1, int(ga_size/2))
   do while ( j1 == j2 )
-   j2 = randint(1, int(ga_size/2),seed)
+   j2 = randint(1, int(ga_size/2))
   end do
   return
  end subroutine choose_randomly
@@ -1037,16 +1047,16 @@ module mod_genetic
   end do
   prop = prop / rrr1
   ! select 1:
-   rrr1 = r4_uniform(0.0,1.0,seed)
+   rrr1 = r4_uniform(0.0,1.0)
    slct1: do i=1,ga_size
     if(rrr1<=prop(i-1).and.rrr1>prop(i))then
      j1 = i
     end if
    end do slct1
    ! select 2:
-   rrr2 = r4_uniform(0.0,1.0,seed)
+   rrr2 = r4_uniform(0.0,1.0)
    do while ( rrr1 == rrr2 )
-    rrr2 = r4_uniform(0.0,1.0,seed)
+    rrr2 = r4_uniform(0.0,1.0)
    end do
    slct2: do i=1,ga_size
     if(rrr2<=prop(i-1).and.rrr2>prop(i))then
@@ -1056,9 +1066,9 @@ module mod_genetic
   return
  end subroutine choose_propto_fitness
 
- subroutine fit(Compound,Seed,n_files,CIFFiles)
+ subroutine fit(Compound,n_files,CIFFiles)
   implicit none
-  integer,intent(in)          :: Compound, Seed,n_files
+  integer,intent(in)          :: Compound, n_files
   type(CIFFile),intent(inout) :: CIFFiles(n_files)
   integer,parameter           :: maxstep = 15, minstep = 10
   integer                     :: kk, ii, i, j, k,vgh
@@ -1082,7 +1092,7 @@ module mod_genetic
    finish_make: do i=n_refits+1,ga_size
     if(i>ga_size) exit finish_make
     write(6,'(a,1x,i4)') 'Initial input',i
-    pop_alpha(i) = new_citizen(compound,seed,n_files,CIFFiles) 
+    pop_alpha(i) = new_citizen(compound,n_files,CIFFiles) 
     call UpdateCitizen(pop_alpha(i),compound,n_files,CIFFiles)
     write(6,'(a)')   pop_alpha(i)%genotype
     write(6,*)     ( pop_alpha(i)%phenotype(j), j=1,np(compound) )
@@ -1094,7 +1104,7 @@ module mod_genetic
    !call Swap()
    call SortByFitness()
   else
-   pop_alpha = [(new_citizen(compound,seed,n_files,CIFFiles), i = 1,ga_size)]
+   pop_alpha = [(new_citizen(compound,n_files,CIFFiles), i = 1,ga_size)]
    parents =>  pop_alpha
    children => pop_beta
   end if
@@ -1126,13 +1136,13 @@ module mod_genetic
    param( compound,i ) = children(1)%phenotype(i+1)
   end do
   write(6,*)'#',(param(compound,i),i=0,np(compound )-1)
-  write(6,*)'#','Fitness:',fit0,'Similarity:',eps,'Rseed',seed
+  write(6,*)'#','Fitness:',fit0,'Similarity:',eps
   return
  end subroutine fit
 end module mod_genetic
 !
 program fitter
- !use iso_fortran_env
+ use,intrinsic :: iso_fortran_env
  use types
  use mod_random
  use get_structures
@@ -1141,16 +1151,11 @@ program fitter
  implicit none
  type(CIFfile),allocatable       :: CIFFiles(:)
  integer                         :: n_files=0
- !print '(4a)', 'This file was compiled by ', &
- !      compiler_version(), ' using the options ', &
- !      compiler_options()
+ print '(4a)', 'This file was compiled by ', &
+       compiler_version(), ' using the options ', &
+       compiler_options()
  call read_input()
- if (seed_flag) then
-  seed = 73709
-  call init_random_seed(seed)
-  seed_flag=.false.
- end if
- write(6,'("Random Seed:",1x,i10)') seed
+ call init_random_seed()
  !call GenerateCIFFileList()
  !First run for debuging
  call ReadListOfCIFFiles(n_files)
@@ -1158,6 +1163,6 @@ program fitter
  call ReadCIFFiles(n_files,CIFFiles)
  call WriteEnergies(n_files,CIFFiles,"ini")
  call ReadObservables(n_files,CIFFiles)
- if (flag) call fit(1,seed,n_files,CIFFiles)
+ if (flag) call fit(1,n_files,CIFFiles)
  call WriteEnergies(n_files,CIFFiles,"end") 
 end program fitter
